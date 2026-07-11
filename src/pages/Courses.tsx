@@ -196,13 +196,13 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
       
       {/* 1. Page Header */}
       <div className="text-center md:text-left space-y-2 mb-8">
-        <span className="text-[10px] bg-slate-900 text-slate-300 px-3 py-1 rounded-full font-bold uppercase tracking-wider inline-block">
+        <span className="text-[10px] bg-slate-900 dark:bg-slate-800 text-slate-300 px-3 py-1 rounded-full font-bold uppercase tracking-wider inline-block">
           University Curriculum Departments
         </span>
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 heading-font tracking-tight">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white heading-font tracking-tight">
           Browse Subject Course Pages
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500 max-w-xl">
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl">
           Organize homework help by specific university syllabus criteria. Pin your classes to curate your custom active study dashboard.
         </p>
       </div>
@@ -212,14 +212,14 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
         
         {/* Left Side: Course Directory list */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2">
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
+          <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block">
               Syllabus Catalog
             </span>
             {isAuthenticated && (
               <button
                 onClick={openCreateModal}
-                className="text-[11px] text-sky-600 hover:text-sky-700 font-bold flex items-center gap-1 transition-colors cursor-pointer bg-sky-50 hover:bg-sky-100/80 border border-sky-100 px-2 py-1 rounded-lg"
+                className="text-[11px] text-sky-600 hover:text-sky-700 font-bold flex items-center gap-1 transition-colors cursor-pointer bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900 px-2 py-1 rounded-lg"
               >
                 <PlusCircle className="w-3.5 h-3.5" />
                 <span>Add Subject</span>
@@ -229,13 +229,13 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
             
           {/* Sidebar filter toggle */}
           {isAuthenticated && (
-            <div className="flex bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-[11px] self-start sm:self-auto">
+            <div className="flex bg-slate-100 dark:bg-slate-900 p-0.5 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] self-start sm:self-auto">
               <button
                 onClick={() => setSidebarFilter('all')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
                   sidebarFilter === 'all'
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 All Subjects
@@ -244,13 +244,13 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                 onClick={() => setSidebarFilter('active')}
                 className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
                   sidebarFilter === 'active'
-                    ? 'bg-white text-sky-600 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 My Active Classes
                 {activeCoursesCount > 0 && (
-                  <span className="bg-sky-100 text-sky-700 text-[9px] px-1.5 py-0.5 rounded-full font-bold">
+                  <span className="bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 text-[9px] px-1.5 py-0.5 rounded-full font-bold">
                     {activeCoursesCount}
                   </span>
                 )}
@@ -265,11 +265,11 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="bg-white border border-dashed border-slate-200 rounded-2xl p-6 text-center"
+                  className="bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center"
                 >
-                  <GraduationCap className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <h5 className="font-bold text-slate-700 text-xs heading-font">No Active Classes</h5>
-                  <p className="text-[11px] text-slate-400 mt-1 max-w-[200px] mx-auto leading-relaxed">
+                  <GraduationCap className="w-8 h-8 text-slate-300 dark:text-slate-700 mx-auto mb-2" />
+                  <h5 className="font-bold text-slate-700 dark:text-slate-300 text-xs heading-font">No Active Classes</h5>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 max-w-[200px] mx-auto leading-relaxed">
                     Toggle "All Subjects" and pin classes from your syllabus to build your private dashboard!
                   </p>
                 </motion.div>
@@ -288,34 +288,34 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                       onClick={() => handleSelectCourse(course.id)}
                       className={`w-full flex items-center justify-between p-4 rounded-2xl border text-left cursor-pointer transition-all ${
                         isActive
-                          ? 'bg-white border-sky-500 shadow-md ring-2 ring-sky-500/10'
-                          : 'bg-white border-slate-200/80 hover:border-slate-300 shadow-sm'
+                          ? 'bg-white dark:bg-slate-900 border-sky-500 dark:border-sky-500 shadow-md ring-2 ring-sky-500/10 dark:ring-sky-500/20'
+                          : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm'
                       }`}
                     >
                       <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="p-2.5 bg-slate-50 border border-slate-100 rounded-xl relative">
+                        <div className="p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/60 rounded-xl relative">
                           {getIcon(course.iconName)}
                           {isPinned && (
-                            <span className="absolute -top-1 -right-1 bg-sky-500 text-white p-0.5 rounded-full border-2 border-white">
+                            <span className="absolute -top-1 -right-1 bg-sky-500 text-white p-0.5 rounded-full border-2 border-white dark:border-slate-900">
                               <Check className="w-2 h-2 stroke-[3]" />
                             </span>
                           )}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <h4 className="font-bold text-slate-800 text-xs heading-font leading-none">{course.code}</h4>
+                            <h4 className="font-bold text-slate-800 dark:text-slate-200 text-xs heading-font leading-none">{course.code}</h4>
                             {isPinned && (
-                              <span className="text-[8px] bg-sky-50 text-sky-600 font-bold border border-sky-100 px-1 py-0.5 rounded uppercase tracking-wide">
+                              <span className="text-[8px] bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 font-bold border border-sky-100 dark:border-sky-900 px-1 py-0.5 rounded uppercase tracking-wide">
                                 Active
                               </span>
                             )}
                           </div>
-                          <span className="text-[11px] text-slate-500 truncate block mt-1">{course.name}</span>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate block mt-1">{course.name}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         {matchingCount > 0 && (
-                          <span className="bg-sky-100 text-sky-800 font-bold text-[10px] px-2 py-0.5 rounded-full">
+                          <span className="bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 font-bold text-[10px] px-2 py-0.5 rounded-full">
                             {matchingCount}
                           </span>
                         )}
@@ -415,12 +415,12 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
               {/* Assignment requests under this course */}
               <div className="space-y-4 mt-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block">
                     Active Open Requests ({courseAssignments.length})
                   </span>
                   
                   {isCourseActive(activeCourse.id, activeCourse.code) && (
-                    <div className="flex items-center gap-1 text-[11px] text-sky-600 font-semibold bg-sky-50 border border-sky-100 px-2.5 py-1 rounded-lg">
+                    <div className="flex items-center gap-1 text-[11px] text-sky-600 dark:text-sky-400 font-semibold bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900 px-2.5 py-1 rounded-lg">
                       <Sparkles className="w-3.5 h-3.5" />
                       Pinned Class Sync Active
                     </div>
@@ -428,16 +428,16 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                 </div>
 
                 {courseAssignments.length === 0 ? (
-                  <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                    <HelpCircle className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                    <h4 className="font-bold text-slate-800 text-sm heading-font">No Open Assignment Requests</h4>
-                    <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto leading-relaxed">
+                  <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                    <HelpCircle className="w-10 h-10 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
+                    <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">No Open Assignment Requests</h4>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
                       There are currently no active help requests listed for {activeCourse.code}. Be the first to start a discussion!
                     </p>
                     {isAuthenticated && currentUser?.role === 'student' && (
                       <button
                         onClick={onOpenNewAssignment}
-                        className="bg-slate-950 text-white text-xs px-4 py-2.5 rounded-xl mt-4 font-bold inline-flex items-center gap-1.5 hover:bg-slate-800 cursor-pointer transition-colors shadow"
+                        className="bg-slate-950 dark:bg-slate-800 text-white text-xs px-4 py-2.5 rounded-xl mt-4 font-bold inline-flex items-center gap-1.5 hover:bg-slate-800 dark:hover:bg-slate-700 cursor-pointer transition-colors shadow"
                       >
                         <PlusCircle className="w-4 h-4" /> Create Help Request
                       </button>
@@ -463,20 +463,20 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white border border-slate-100 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
               id="course_form_modal_card"
             >
               {/* Header */}
-              <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-base heading-font">
+                  <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-base heading-font">
                     {isFormEditing ? "Edit Subject Course" : "Create New Subject"}
                   </h3>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Define curriculum criteria and help requests routing</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Define curriculum criteria and help requests routing</p>
                 </div>
                 <button
                   onClick={() => setIsFormModalOpen(false)}
-                  className="p-1.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -487,7 +487,7 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                 {/* Code & Name Row */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1">
-                    <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                       Course Code *
                     </label>
                     <input
@@ -496,11 +496,11 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                       required
                       value={courseFormCode}
                       onChange={(e) => setCourseFormCode(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 text-xs text-slate-800 px-3.5 py-2.5 rounded-xl outline-none focus:border-sky-500 focus:bg-white transition-all uppercase"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-100 px-3.5 py-2.5 rounded-xl outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 transition-all uppercase"
                     />
                   </div>
                   <div className="col-span-2">
-                    <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                       Course Name *
                     </label>
                     <input
@@ -509,33 +509,33 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                       required
                       value={courseFormName}
                       onChange={(e) => setCourseFormName(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 text-xs text-slate-800 px-3.5 py-2.5 rounded-xl outline-none focus:border-sky-500 focus:bg-white transition-all"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-100 px-3.5 py-2.5 rounded-xl outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Category Selection */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                     Category Group
                   </label>
                   <select
                     value={courseFormCategory}
                     onChange={(e) => setCourseFormCategory(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs text-slate-800 px-3.5 py-2.5 rounded-xl outline-none focus:border-sky-500 focus:bg-white transition-all cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-100 px-3.5 py-2.5 rounded-xl outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 transition-all cursor-pointer"
                   >
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Science">Science</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Business">Business</option>
-                    <option value="Humanities">Humanities</option>
+                    <option value="Computer Science" className="dark:bg-slate-900">Computer Science</option>
+                    <option value="Mathematics" className="dark:bg-slate-900">Mathematics</option>
+                    <option value="Science" className="dark:bg-slate-900">Science</option>
+                    <option value="Engineering" className="dark:bg-slate-900">Engineering</option>
+                    <option value="Business" className="dark:bg-slate-900">Business</option>
+                    <option value="Humanities" className="dark:bg-slate-900">Humanities</option>
                   </select>
                 </div>
 
                 {/* Icon Picker Grid */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2">
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">
                     Visual Subject Icon
                   </label>
                   <div className="grid grid-cols-6 gap-2">
@@ -555,8 +555,8 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                           onClick={() => setCourseFormIcon(item.name)}
                           className={`p-3 rounded-xl border flex flex-col items-center gap-1 transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-sky-50 border-sky-400 text-sky-600 shadow-sm ring-1 ring-sky-400'
-                              : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'
+                              ? 'bg-sky-50 dark:bg-sky-950/40 border-sky-400 dark:border-sky-500 text-sky-600 dark:text-sky-400 shadow-sm ring-1 ring-sky-400'
+                              : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
                           }`}
                         >
                           {item.icon}
@@ -569,7 +569,7 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
 
                 {/* Description */}
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                     Subject Syllabus Description
                   </label>
                   <textarea
@@ -577,16 +577,16 @@ export default function Courses({ onOpenNewAssignment }: CoursesProps) {
                     rows={4}
                     value={courseFormDescription}
                     onChange={(e) => setCourseFormDescription(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs text-slate-800 px-3.5 py-2.5 rounded-xl outline-none focus:border-sky-500 focus:bg-white transition-all resize-none leading-relaxed"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-100 px-3.5 py-2.5 rounded-xl outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 transition-all resize-none leading-relaxed"
                   />
                 </div>
 
                 {/* Form Action Footer */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-2 bg-white">
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2 bg-white dark:bg-slate-900">
                   <button
                     type="button"
                     onClick={() => setIsFormModalOpen(false)}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
+                    className="px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>

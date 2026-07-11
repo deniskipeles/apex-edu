@@ -98,7 +98,7 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col max-h-[92vh] overflow-hidden">
+      <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 flex flex-col max-h-[92vh] overflow-hidden">
         
         {/* Custom Header */}
         <div className="bg-slate-950 px-6 py-5 text-white flex items-center justify-between shrink-0">
@@ -119,14 +119,14 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
           {localError && (
-            <div className="p-3.5 bg-rose-50 border border-rose-200/80 rounded-2xl text-xs text-rose-700 font-medium">
+            <div className="p-3.5 bg-rose-50 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/60 rounded-2xl text-xs text-rose-700 dark:text-rose-400 font-medium">
               {localError}
             </div>
           )}
 
           {/* Title */}
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
               Assignment Title
             </label>
             <input
@@ -134,7 +134,7 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:bg-white px-4 py-2.5 rounded-xl outline-none text-sm text-slate-800 transition-all"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 px-4 py-2.5 rounded-xl outline-none text-sm text-slate-800 dark:text-slate-100 transition-all"
               placeholder="e.g. Binary Search Tree Implementation"
             />
           </div>
@@ -143,18 +143,18 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Course Picker */}
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
                 Course / Subject
               </label>
               <select
                 required
                 value={courseId}
                 onChange={(e) => setCourseId(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:bg-white px-3.5 py-2.5 rounded-xl outline-none text-sm text-slate-800 transition-all"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 px-3.5 py-2.5 rounded-xl outline-none text-sm text-slate-800 dark:text-slate-100 transition-all"
               >
-                <option value="">Select Category</option>
+                <option value="" className="dark:bg-slate-900">Select Category</option>
                 {courses.map((course) => (
-                  <option key={course.id} value={course.id}>
+                  <option key={course.id} value={course.id} className="dark:bg-slate-900">
                     {course.code} - {course.name}
                   </option>
                 ))}
@@ -163,19 +163,19 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
 
             {/* Budget */}
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1.5 flex justify-between items-center">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5 flex justify-between items-center">
                 <span>Offered Budget (USD)</span>
-                <span className="text-[10px] text-slate-400">Escrow protected</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500">Escrow protected</span>
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-sm">$</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 font-semibold text-sm">$</span>
                 <input
                   type="number"
                   min="5"
                   required
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:bg-white pl-8 pr-4 py-2.5 rounded-xl outline-none text-sm text-slate-800 transition-all font-semibold"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 pl-8 pr-4 py-2.5 rounded-xl outline-none text-sm text-slate-800 dark:text-slate-100 transition-all font-semibold"
                   placeholder="Budget"
                 />
               </div>
@@ -184,7 +184,7 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
 
           {/* Description */}
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
               Assignment Description & Requirements
             </label>
             <textarea
@@ -192,14 +192,14 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:bg-white px-4 py-2.5 rounded-xl outline-none text-sm text-slate-800 transition-all resize-none leading-relaxed"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 px-4 py-2.5 rounded-xl outline-none text-sm text-slate-800 dark:text-slate-100 transition-all resize-none leading-relaxed"
               placeholder="Outline the detailed guidelines, homework problems, programming conditions, or grading rubrics to help tutors make precise bids..."
             />
           </div>
 
           {/* Deadline */}
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
               Submission Deadline
             </label>
             <div className="relative">
@@ -208,7 +208,7 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
                 required
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:bg-white pl-10 pr-4 py-2.5 rounded-xl outline-none text-sm text-slate-800 transition-all"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 pl-10 pr-4 py-2.5 rounded-xl outline-none text-sm text-slate-800 dark:text-slate-100 transition-all"
               />
               <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             </div>
@@ -216,7 +216,7 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
 
           {/* Interactive File Dropzone */}
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
               Attach Support Files (Homework Briefs, Code Sheets, Readings)
             </label>
             
@@ -227,8 +227,8 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
               onClick={() => fileInputRef.current?.click()}
               className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
                 isDragOver
-                  ? 'border-sky-500 bg-sky-50/50'
-                  : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                  ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/20'
+                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 bg-slate-50/50 dark:bg-slate-950/40'
               }`}
             >
               <input
@@ -239,10 +239,10 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
                 className="hidden"
               />
               <UploadCloud className="w-8 h-8 text-sky-500 mb-2" />
-              <p className="text-xs font-medium text-slate-700">
-                Drag and drop files here, or <span className="text-sky-600">browse computer</span>
+              <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                Drag and drop files here, or <span className="text-sky-600 dark:text-sky-400 font-semibold">browse computer</span>
               </p>
-              <p className="text-[10px] text-slate-400 mt-1">PDF, DOC, ZIP, PNG up to 15MB</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">PDF, DOC, ZIP, PNG up to 15MB</p>
             </div>
 
             {/* Displaying File List */}
@@ -251,12 +251,12 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
                 {files.map((file, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-2.5 bg-slate-50 border border-slate-200/60 p-2.5 rounded-xl text-xs"
+                    className="flex items-center gap-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800 p-2.5 rounded-xl text-xs"
                   >
                     <FileText className="w-4 h-4 text-sky-600 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-slate-700 truncate">{file.name}</p>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="font-medium text-slate-700 dark:text-slate-300 truncate">{file.name}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500">
                         {(file.size / 1024).toFixed(1)} KB
                       </p>
                     </div>
@@ -267,7 +267,7 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
                           setSelectedFileName(file.name);
                           setViewerOpen(true);
                         }}
-                        className="text-sky-500 hover:text-sky-700 hover:bg-sky-50 p-1 rounded-lg cursor-pointer transition-colors"
+                        className="text-sky-500 hover:text-sky-700 hover:bg-sky-50 dark:hover:bg-sky-950/40 p-1 rounded-lg cursor-pointer transition-colors"
                         title="Secure Preview"
                       >
                         <Eye className="w-3.5 h-3.5" />
@@ -275,7 +275,7 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
                       <button
                         type="button"
                         onClick={() => handleRemoveFile(idx)}
-                        className="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer"
+                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-lg cursor-pointer"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -287,11 +287,11 @@ export default function AssignmentFormModal({ isOpen, onClose }: AssignmentFormM
           </div>
 
           {/* Submit Actions */}
-          <div className="pt-4 border-t border-slate-100 flex gap-3 shrink-0">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex gap-3 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold rounded-xl text-sm transition-colors cursor-pointer"
+              className="flex-1 py-2.5 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold rounded-xl text-sm transition-colors cursor-pointer"
             >
               Discard
             </button>

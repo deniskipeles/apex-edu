@@ -338,30 +338,30 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
           {/* Quick info pane for students */}
           {currentUser?.role === 'student' ? (
             <>
-            <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-4">
-              <h4 className="font-bold text-slate-800 text-sm heading-font">Student Operations</h4>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
+              <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm heading-font">Student Operations</h4>
               <button
                 onClick={onOpenNewAssignment}
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs shadow cursor-pointer transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-semibold rounded-xl text-xs shadow cursor-pointer transition-colors"
               >
                 <PlusCircle className="w-4 h-4" />
                 Post Homework Help
               </button>
-              <div className="bg-sky-50/50 p-3 rounded-xl border border-sky-100 text-slate-600 text-[11px] leading-relaxed">
+              <div className="bg-sky-50/50 dark:bg-sky-950/20 p-3 rounded-xl border border-sky-100 dark:border-sky-900/60 text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
                 Need exam preparation or homework review? Enter assignment guidelines and receive instant competitive bid quotes from vetted university tutors.
               </div>
             </div>
             
             {/* 30-Day Activity Chart */}
-            <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-slate-800 text-sm heading-font">30-Day Activity</h4>
-                <span className="text-[10px] bg-emerald-50 text-emerald-600 font-bold px-2 py-0.5 rounded uppercase tracking-wide border border-emerald-100">Completed</span>
+                <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm heading-font">30-Day Activity</h4>
+                <span className="text-[10px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-0.5 rounded uppercase tracking-wide border border-emerald-100 dark:border-emerald-900">Completed</span>
               </div>
               <div className="h-40 w-full mt-2">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={completedAssignmentsChartData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="opacity-30" />
                     <XAxis 
                       dataKey="dateStr" 
                       tick={{ fontSize: 9, fill: '#94a3b8' }} 
@@ -388,15 +388,15 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
             </>
           ) : (
             // Tutor Bio editor
-            <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-slate-800 text-sm heading-font">Tutor Qualifications</h4>
+                <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm heading-font">Tutor Qualifications</h4>
                 <button
                   onClick={() => {
                     if (isEditingBio) handleSaveTutorProfile();
                     else setIsEditingBio(true);
                   }}
-                  className="text-sky-600 hover:text-sky-700 text-xs font-semibold cursor-pointer"
+                  className="text-sky-600 hover:text-sky-700 dark:text-sky-450 text-xs font-semibold cursor-pointer"
                 >
                   {isEditingBio ? 'Save' : 'Edit'}
                 </button>
@@ -410,7 +410,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                       type="number"
                       value={tutorRate}
                       onChange={(e) => setTutorRate(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs text-slate-800"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -419,19 +419,19 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                       value={tutorBio}
                       onChange={(e) => setTutorBio(e.target.value)}
                       rows={3}
-                      className="w-full bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs text-slate-800 resize-none"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-2 rounded-xl text-xs text-slate-800 dark:text-slate-100 resize-none focus:outline-none"
                     />
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3 text-xs text-slate-500">
                   <div>
-                    <span className="font-semibold text-slate-700">Tutoring rate: </span>
-                    <span className="font-mono text-slate-800">${currentUser?.hourlyRate}/hour</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">Tutoring rate: </span>
+                    <span className="font-mono text-slate-800 dark:text-slate-200">${currentUser?.hourlyRate}/hour</span>
                   </div>
                   <div>
-                    <span className="font-semibold text-slate-700 block mb-1">Introductory statement:</span>
-                    <p className="leading-relaxed bg-slate-50 p-2.5 rounded-xl text-slate-600 italic">
+                    <span className="font-semibold text-slate-700 dark:text-slate-300 block mb-1">Introductory statement:</span>
+                    <p className="leading-relaxed bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl text-slate-600 dark:text-slate-400 italic">
                       "{currentUser?.bio || 'Professional tutoring specialist ready to help you earn top grades.'}"
                     </p>
                   </div>
@@ -441,29 +441,29 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
           )}
 
           {/* My Active Classes / Pinned Syllabus Widget */}
-          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-3" id="dashboard_active_classes_sidebar">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-3" id="dashboard_active_classes_sidebar">
             <div className="flex items-center justify-between">
-              <h4 className="font-bold text-slate-800 text-sm heading-font flex items-center gap-1.5">
+              <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm heading-font flex items-center gap-1.5">
                 <Bookmark className="w-4 h-4 text-sky-500 fill-sky-500/10 animate-pulse" />
                 My Active Classes
               </h4>
               <Link
                 to="/courses"
-                className="text-[10px] text-sky-600 hover:text-sky-700 font-bold uppercase tracking-wider flex items-center gap-0.5 transition-colors cursor-pointer"
+                className="text-[10px] text-sky-600 hover:text-sky-700 dark:text-sky-400 font-bold uppercase tracking-wider flex items-center gap-0.5 transition-colors cursor-pointer"
               >
                 Manage <ArrowUpRight className="w-3 h-3" />
               </Link>
             </div>
             
             {myActiveCourses.length === 0 ? (
-              <div className="bg-slate-50 border border-dashed border-slate-200 p-4 rounded-xl text-center space-y-1">
-                <GraduationCap className="w-6 h-6 text-slate-300 mx-auto" />
-                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+              <div className="bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-800 p-4 rounded-xl text-center space-y-1">
+                <GraduationCap className="w-6 h-6 text-slate-300 dark:text-slate-700 mx-auto" />
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
                   No active syllabus classes pinned.
                 </p>
                 <Link
                   to="/courses"
-                  className="text-[10px] text-sky-600 hover:underline font-bold block"
+                  className="text-[10px] text-sky-600 hover:underline dark:text-sky-400 font-bold block"
                 >
                   Pin from Subject List →
                 </Link>
@@ -476,18 +476,18 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                     <Link
                       key={course.id}
                       to="/courses"
-                      className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-100 hover:border-slate-200 bg-slate-50/50 hover:bg-slate-50 text-left transition-all block cursor-pointer group"
+                      className="w-full flex items-center justify-between p-2.5 rounded-xl border border-slate-100 dark:border-slate-800/60 hover:border-slate-200 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-950/40 hover:bg-slate-50 dark:hover:bg-slate-950 text-left transition-all block cursor-pointer group"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-[9px] bg-sky-100 text-sky-700 font-bold border border-sky-200/50 px-1.5 py-0.5 rounded uppercase font-mono shrink-0 group-hover:bg-sky-200 transition-colors">
+                        <span className="text-[9px] bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-bold border border-sky-200/50 dark:border-sky-900/40 px-1.5 py-0.5 rounded uppercase font-mono shrink-0 group-hover:bg-sky-200 transition-colors">
                           {course.code}
                         </span>
-                        <span className="text-[11px] text-slate-700 font-semibold truncate group-hover:text-slate-900 transition-colors">
+                        <span className="text-[11px] text-slate-700 dark:text-slate-300 font-semibold truncate group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors">
                           {course.name}
                         </span>
                       </div>
                       {matchingCount > 0 ? (
-                        <span className="bg-sky-50 text-sky-600 font-bold text-[9px] px-1.5 py-0.5 rounded-full border border-sky-100 shrink-0">
+                        <span className="bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 font-bold text-[9px] px-1.5 py-0.5 rounded-full border border-sky-100 dark:border-sky-900 shrink-0">
                           {matchingCount} open
                         </span>
                       ) : (
@@ -503,13 +503,13 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
           </div>
 
           {/* Quick chat workspace side widget */}
-          <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm space-y-3">
-            <h4 className="font-bold text-slate-800 text-sm heading-font flex items-center gap-1.5">
-              <MessageSquare className="w-4 h-4 text-slate-400" />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm space-y-3">
+            <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm heading-font flex items-center gap-1.5">
+              <MessageSquare className="w-4 h-4 text-slate-400 dark:text-slate-500" />
               Assigned Chats
             </h4>
             {recentConversations.length === 0 ? (
-              <p className="text-xs text-slate-400 py-3 text-center leading-normal">
+              <p className="text-xs text-slate-400 dark:text-slate-500 py-3 text-center leading-normal">
                 No active messaging contracts. Discuss queries inside bids to initiate chats.
               </p>
             ) : (
@@ -523,18 +523,18 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                     }}
                     className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-all cursor-pointer ${
                       activeChatPartner?.id === p.id && activeTab === 'messages'
-                        ? 'bg-sky-50 border border-sky-100'
-                        : 'hover:bg-slate-50 border border-transparent'
+                        ? 'bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900'
+                        : 'hover:bg-slate-50 dark:hover:bg-slate-850/50 border border-transparent'
                     }`}
                   >
                     <img
                       src={p.avatar}
                       alt={p.name}
-                      className="w-8.5 h-8.5 rounded-full border border-slate-200"
+                      className="w-8.5 h-8.5 rounded-full border border-slate-200 dark:border-slate-800 object-cover"
                     />
                     <div className="flex-1 min-w-0">
-                      <h5 className="font-bold text-slate-800 text-xs truncate leading-none">{p.name}</h5>
-                      <span className="text-[10px] text-slate-400 capitalize inline-block mt-1">{p.role}</span>
+                      <h5 className="font-bold text-slate-800 dark:text-slate-200 text-xs truncate leading-none">{p.name}</h5>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 capitalize inline-block mt-1">{p.role}</span>
                     </div>
                   </button>
                 ))}
@@ -546,7 +546,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
         {/* Right column main content panel board */}
         <div className="lg:col-span-9 space-y-6">
           {/* Dynamic Switch Headers */}
-          <div className="border-b border-slate-200 flex items-center gap-4 overflow-x-auto pb-px">
+          <div className="border-b border-slate-200 dark:border-slate-800 flex items-center gap-4 overflow-x-auto pb-px">
             {currentUser?.role === 'student' ? (
               <>
                 <button
@@ -554,7 +554,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   className={`pb-3 text-sm font-semibold tracking-tight cursor-pointer transition-all ${
                     activeTab === 'active'
                       ? 'border-b-2 border-sky-600 text-sky-600'
-                      : 'text-slate-500 hover:text-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   Ongoing Tutoring ({studentActive.length})
@@ -564,7 +564,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   className={`pb-3 text-sm font-semibold tracking-tight cursor-pointer transition-all ${
                     activeTab === 'open'
                       ? 'border-b-2 border-sky-600 text-sky-600'
-                      : 'text-slate-500 hover:text-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   My Help Requests ({studentOpen.length})
@@ -574,7 +574,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   className={`pb-3 text-sm font-semibold tracking-tight cursor-pointer transition-all ${
                     activeTab === 'completed'
                       ? 'border-b-2 border-sky-600 text-sky-600'
-                      : 'text-slate-500 hover:text-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   Completed Solutions ({studentCompleted.length})
@@ -587,7 +587,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   className={`pb-3 text-sm font-semibold tracking-tight cursor-pointer transition-all ${
                     activeTab === 'active'
                       ? 'border-b-2 border-sky-600 text-sky-600'
-                      : 'text-slate-500 hover:text-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   My Active Classes ({tutorActive.length})
@@ -597,7 +597,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   className={`pb-3 text-sm font-semibold tracking-tight cursor-pointer transition-all ${
                     activeTab === 'open'
                       ? 'border-b-2 border-sky-600 text-sky-600'
-                      : 'text-slate-500 hover:text-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   Browse Open Markets ({tutorOpenMarket.length})
@@ -607,7 +607,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   className={`pb-3 text-sm font-semibold tracking-tight cursor-pointer transition-all ${
                     activeTab === 'proposals'
                       ? 'border-b-2 border-sky-600 text-sky-600'
-                      : 'text-slate-500 hover:text-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   My Placed Proposals ({tutorProposals.length})
@@ -617,7 +617,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   className={`pb-3 text-sm font-semibold tracking-tight cursor-pointer transition-all ${
                     activeTab === 'completed'
                       ? 'border-b-2 border-sky-600 text-sky-600'
-                      : 'text-slate-500 hover:text-slate-800'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   Earned Commissions ({tutorCompleted.length})
@@ -631,7 +631,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
               className={`pb-3 text-sm font-semibold tracking-tight cursor-pointer transition-all ${
                 activeTab === 'messages'
                   ? 'border-b-2 border-sky-600 text-sky-600'
-                  : 'text-slate-500 hover:text-slate-800'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               Direct Chats Workspace
@@ -642,22 +642,22 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
 
           {/* 1. Chats Workspace view tab */}
           {activeTab === 'messages' ? (
-            <div className="bg-slate-50/50 border border-slate-200/60 rounded-3xl overflow-hidden h-[600px] shadow-sm flex" id="dashboard_messages_container">
+            <div className="bg-slate-50/50 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800 rounded-3xl overflow-hidden h-[600px] shadow-sm flex" id="dashboard_messages_container">
               {/* Chats Sidebar - Visible on desktop, or on mobile when no active partner is selected */}
-              <div className={`w-full md:w-80 border-r border-slate-200 bg-white flex flex-col shrink-0 ${
+              <div className={`w-full md:w-80 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col shrink-0 ${
                 activeChatPartner ? 'hidden md:flex' : 'flex'
               }`}>
                 {/* Sidebar Header */}
-                <div className="p-4 border-b border-slate-200 bg-slate-50/80">
-                  <h3 className="font-bold text-slate-800 text-sm heading-font flex items-center gap-2">
+                <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/80">
+                  <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-sky-500" />
                     Conversations
                   </h3>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Direct chat with active tutors and candidates</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Direct chat with active tutors and candidates</p>
                 </div>
                 
                 {/* Chats Search/Filter */}
-                <div className="p-3 border-b border-slate-150">
+                <div className="p-3 border-b border-slate-150 dark:border-slate-800">
                   <div className="relative">
                     <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
                     <input
@@ -665,7 +665,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                       placeholder="Search conversations..."
                       value={searchChatQuery}
                       onChange={(e) => setSearchChatQuery(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 text-xs text-slate-800 pl-9 pr-4 py-2 rounded-xl outline-none focus:border-sky-500 focus:bg-white transition-all"
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-100 pl-9 pr-4 py-2 rounded-xl outline-none focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 transition-all"
                     />
                   </div>
                 </div>
@@ -674,8 +674,8 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                 <div className="flex-1 overflow-y-auto p-2 space-y-1">
                   {filteredChats.length === 0 ? (
                     <div className="text-center py-12 text-slate-400 px-4">
-                      <p className="text-xs font-semibold">No conversations found</p>
-                      <p className="text-[10px] text-slate-400 mt-1">Discuss pre-contract queries on bids or start tutoring to message!</p>
+                      <p className="text-xs font-semibold dark:text-slate-300">No conversations found</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">Discuss pre-contract queries on bids or start tutoring to message!</p>
                     </div>
                   ) : (
                     filteredChats.map((p) => {
@@ -686,29 +686,29 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                           onClick={() => startChat(p.id)}
                           className={`w-full flex items-center gap-3 p-3 rounded-2xl text-left transition-all cursor-pointer relative group ${
                             isActive
-                              ? 'bg-sky-50 border border-sky-100'
-                              : 'hover:bg-slate-50 border border-transparent'
+                              ? 'bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/60'
+                              : 'hover:bg-slate-50 dark:hover:bg-slate-850/40 border border-transparent'
                           }`}
                         >
                           <div className="relative shrink-0">
                             <img
                               src={p.avatar}
                               alt={p.name}
-                              className="w-10 h-10 rounded-full border border-slate-200 object-cover"
+                              className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-800 object-cover"
                             />
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white" />
+                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" />
                           </div>
                           
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-1">
-                              <h5 className="font-bold text-slate-800 text-xs truncate heading-font leading-tight group-hover:text-sky-600 transition-colors">
+                              <h5 className="font-bold text-slate-800 dark:text-slate-200 text-xs truncate heading-font leading-tight group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                                 {p.name}
                               </h5>
-                              <span className="text-[9px] bg-slate-100 text-slate-500 font-bold px-1.5 py-0.5 rounded capitalize font-mono">
+                              <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-1.5 py-0.5 rounded capitalize font-mono">
                                 {p.role}
                               </span>
                             </div>
-                            <p className="text-[10px] text-slate-400 truncate mt-1 leading-normal">
+                            <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-1 leading-normal">
                               {p.bio || "No description provided"}
                             </p>
                           </div>
@@ -737,7 +737,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                           // Clear active chat to return to the sidebar on mobile
                           useStore.setState({ activeChatPartner: null, activeChatRoomId: null });
                         }}
-                        className="bg-white/80 backdrop-blur-md hover:bg-slate-100 text-slate-700 p-2 rounded-full border border-slate-200 shadow-md flex items-center justify-center transition-all cursor-pointer animate-pulse"
+                        className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-700 dark:text-slate-300 p-2 rounded-full border border-slate-200 dark:border-slate-800 shadow-md flex items-center justify-center transition-all cursor-pointer animate-pulse"
                         title="Back to conversations"
                       >
                         <ChevronLeft className="w-4 h-4" />
@@ -746,12 +746,12 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                     <MessageWindow />
                   </div>
                 ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-slate-50/50">
-                    <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
-                      <MessageSquare className="w-8 h-8 text-slate-400" />
+                  <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-slate-50/50 dark:bg-slate-900/20">
+                    <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
+                      <MessageSquare className="w-8 h-8 text-slate-400 dark:text-slate-500" />
                     </div>
-                    <h4 className="text-base font-bold text-slate-800 heading-font mb-1">Select a Conversation</h4>
-                    <p className="text-xs text-slate-500 max-w-xs leading-normal">
+                    <h4 className="text-base font-bold text-slate-800 dark:text-slate-200 heading-font mb-1">Select a Conversation</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs leading-normal">
                       Choose a tutor or student from the conversations list to start your direct workspace study.
                     </p>
                   </div>
@@ -766,10 +766,10 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   {/* ONGOING TAB */}
                   {activeTab === 'active' && (
                     studentActive.length === 0 ? (
-                      <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <Clock className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                        <h4 className="font-bold text-slate-800 text-sm heading-font">No Active Tutor Contracts</h4>
-                        <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                      <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                        <Clock className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                        <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">No Active Tutor Contracts</h4>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                           Accept tutor candidate proposals on your assignment requests to start direct workspace studies.
                         </p>
                       </div>
@@ -787,10 +787,10 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   {/* OPEN REQUESTS TAB */}
                   {activeTab === 'open' && (
                     studentOpen.length === 0 ? (
-                      <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <PlusCircle className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                        <h4 className="font-bold text-slate-800 text-sm heading-font">No Active Help Requests</h4>
-                        <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                      <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                        <PlusCircle className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                        <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">No Active Help Requests</h4>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                           Click the 'Ask for Help' button above to request competitive bids on homework drafts.
                         </p>
                       </div>
@@ -808,10 +808,10 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   {/* COMPLETED TAB */}
                   {activeTab === 'completed' && (
                     studentCompleted.length === 0 ? (
-                      <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <CheckCircle className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                        <h4 className="font-bold text-slate-800 text-sm heading-font">No Completed Assignments</h4>
-                        <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                      <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                        <CheckCircle className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                        <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">No Completed Assignments</h4>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                           Solutions approved and paid will be listed here as secure archives.
                         </p>
                       </div>
@@ -830,10 +830,10 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   {/* TUTOR ACTIVE TAB */}
                   {activeTab === 'active' && (
                     tutorActive.length === 0 ? (
-                      <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <Clock className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                        <h4 className="font-bold text-slate-800 text-sm heading-font">No Active Student Contracts</h4>
-                        <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                      <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                        <Clock className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                        <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">No Active Student Contracts</h4>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                           Browse the open markets below and send competitive bid proposals to secure teaching contracts.
                         </p>
                       </div>
@@ -851,10 +851,10 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   {/* TUTOR OPEN MARKET TAB */}
                   {activeTab === 'open' && (
                     tutorOpenMarket.length === 0 ? (
-                      <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <Sparkles className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                        <h4 className="font-bold text-slate-800 text-sm heading-font">Assignment Market Is Dry</h4>
-                        <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                      <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                        <Sparkles className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                        <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">Assignment Market Is Dry</h4>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                           No active assignments found seeking support at this moment. Please check back shortly.
                         </p>
                       </div>
@@ -872,10 +872,10 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   {/* TUTOR PLACED PROPOSALS TAB */}
                   {activeTab === 'proposals' && (
                     tutorProposals.length === 0 ? (
-                      <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <FileCheck className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                        <h4 className="font-bold text-slate-800 text-sm heading-font">No Proposals Sent</h4>
-                        <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                      <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                        <FileCheck className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                        <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">No Proposals Sent</h4>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                           Any bids you place on open assignment listings will show up here.
                         </p>
                       </div>
@@ -889,10 +889,10 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   {/* TUTOR COMPLETED TAB */}
                   {activeTab === 'completed' && (
                     tutorCompleted.length === 0 ? (
-                      <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                        <Coins className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                        <h4 className="font-bold text-slate-800 text-sm heading-font">No Earnings Transferred Yet</h4>
-                        <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                      <div className="text-center py-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+                        <Coins className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                        <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">No Earnings Transferred Yet</h4>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                           Completed contracts that student has approved and released from escrow will compile here.
                         </p>
                       </div>
@@ -916,41 +916,41 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
       {/* A. PLACE BID MODAL FOR TUTORS */}
       {bidModalOpen && selectedAssignmentToBid && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-slate-100 flex flex-col">
-            <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
-              <h4 className="font-bold text-slate-800 text-sm heading-font">Draft Bid Proposal</h4>
-              <button onClick={handleCloseBidModal} className="text-slate-400 hover:text-slate-600 cursor-pointer">
+          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 flex flex-col">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+              <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm heading-font">Draft Bid Proposal</h4>
+              <button onClick={handleCloseBidModal} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handlePostBid} className="space-y-4">
               <div>
-                <span className="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">Project Title</span>
-                <span className="font-bold text-slate-700 text-xs mt-1 block leading-relaxed">{selectedAssignmentToBid.title}</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase block tracking-wider">Project Title</span>
+                <span className="font-bold text-slate-700 dark:text-slate-300 text-xs mt-1 block leading-relaxed">{selectedAssignmentToBid.title}</span>
               </div>
 
               {/* Quote budget */}
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                   My Bid Price Quote (USD)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-xs">$</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 font-semibold text-xs">$</span>
                   <input
                     type="number"
                     min="1"
                     required
                     value={bidAmount}
                     onChange={(e) => setBidAmount(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:bg-white pl-8 pr-4 py-2 rounded-xl outline-none text-xs text-slate-800 transition-all font-semibold"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 dark:focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 pl-8 pr-4 py-2 rounded-xl outline-none text-xs text-slate-800 dark:text-slate-100 transition-all font-semibold"
                   />
                 </div>
               </div>
 
               {/* Cover proposal message */}
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                   Describe your proposal approach
                 </label>
                 <textarea
@@ -958,7 +958,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   rows={4}
                   value={bidProposal}
                   onChange={(e) => setBidProposal(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:bg-white px-3 py-2 rounded-xl outline-none text-xs text-slate-800 transition-all resize-none leading-relaxed"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 dark:focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 px-3 py-2 rounded-xl outline-none text-xs text-slate-800 dark:text-slate-100 transition-all resize-none leading-relaxed"
                   placeholder="Tell the student how you can assist them, your expertise in this field, and estimated completion time..."
                 />
               </div>
@@ -967,7 +967,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                 <button
                   type="button"
                   onClick={handleCloseBidModal}
-                  className="flex-1 py-2 text-xs font-semibold border border-slate-200 text-slate-500 rounded-xl"
+                  className="flex-1 py-2 text-xs font-semibold border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 rounded-xl"
                 >
                   Cancel
                 </button>
@@ -986,10 +986,10 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
       {/* B. STUDENT RELEASE ESCROW & RATE REVIEW MODAL */}
       {reviewModalOpen && selectedTutorToReview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-slate-100 flex flex-col">
-            <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
-              <h4 className="font-bold text-slate-800 text-sm heading-font">Approve Assignment Solutions</h4>
-              <button onClick={handleCloseReviewModal} className="text-slate-400 hover:text-slate-600 cursor-pointer">
+          <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 flex flex-col">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+              <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm heading-font">Approve Assignment Solutions</h4>
+              <button onClick={handleCloseReviewModal} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -1006,8 +1006,8 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
               }}
               className="space-y-4"
             >
-              <div className="bg-emerald-50 border border-emerald-100 p-3.5 rounded-2xl flex gap-2.5 text-xs text-emerald-800 leading-relaxed">
-                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 p-3.5 rounded-2xl flex gap-2.5 text-xs text-emerald-800 dark:text-emerald-300 leading-relaxed">
+                <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <div>
                   <span className="font-bold block">Approve & Release Payment</span>
                   By approving, you authorize EduSolve to instantly release the escrow contract budget to <span className="font-bold">{selectedTutorToReview.name}</span>.
@@ -1016,7 +1016,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
 
               {/* Star Rating picker */}
               <div className="text-center pt-2">
-                <label className="text-xs font-semibold text-slate-500 block mb-2">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-2">
                   Rate your tutoring experience with {selectedTutorToReview.name}
                 </label>
                 <div className="flex items-center justify-center gap-1.5">
@@ -1029,7 +1029,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                     >
                       <Star
                         className={`w-7 h-7 ${
-                          star <= reviewRating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'
+                          star <= reviewRating ? 'fill-amber-400 text-amber-400' : 'text-slate-200 dark:text-slate-700'
                         }`}
                       />
                     </button>
@@ -1039,7 +1039,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
 
               {/* Review Comment */}
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                   Add a comment review
                 </label>
                 <textarea
@@ -1047,7 +1047,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                   rows={3}
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-sky-500 focus:bg-white px-3 py-2 rounded-xl outline-none text-xs text-slate-800 transition-all resize-none leading-normal"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-sky-500 dark:focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 px-3 py-2 rounded-xl outline-none text-xs text-slate-800 dark:text-slate-100 transition-all resize-none leading-normal"
                   placeholder="What did you like about the solution explainers or draft code sheets?..."
                 />
               </div>
@@ -1056,7 +1056,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
                 <button
                   type="button"
                   onClick={handleCloseReviewModal}
-                  className="flex-1 py-2 text-xs font-semibold border border-slate-200 text-slate-500 rounded-xl"
+                  className="flex-1 py-2 text-xs font-semibold border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 rounded-xl"
                 >
                   Cancel
                 </button>

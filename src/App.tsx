@@ -42,7 +42,7 @@ function AppLayout() {
   }, [init]);
 
   return (
-    <div className="min-h-screen bg-slate-50/50 flex flex-col selection:bg-sky-500/10 selection:text-sky-700">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-slate-100 selection:bg-sky-500/10 selection:text-sky-700 transition-colors duration-200">
       {/* Dynamic Header */}
       <Navbar
         onOpenDeposit={() => setDepositOpen(true)}
@@ -90,7 +90,7 @@ function AppLayout() {
       </main>
 
       {/* Footer credits */}
-      <footer className="bg-white border-t border-slate-200/60 py-6 text-center text-xs text-slate-400">
+      <footer className="bg-white dark:bg-slate-950 border-t border-slate-200/60 dark:border-slate-800/60 py-6 text-center text-xs text-slate-400 dark:text-slate-500 transition-colors duration-200">
         <p>© {new Date().getFullYear()} EduSolve. All rights reserved. Powered by secure ApexKit ledger storage.</p>
       </footer>
 

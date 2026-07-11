@@ -66,6 +66,10 @@ interface AppState {
   createCourse: (code: string, name: string, category: string, iconName: string, description: string) => Promise<void>;
   updateCourse: (courseId: string, updates: Partial<Omit<Course, 'id'>>) => Promise<void>;
   deleteCourse: (courseId: string) => Promise<void>;
+
+  // Theme Management
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -91,7 +95,27 @@ export const useStore = create<AppState>((set, get) => ({
   activeChatRoomId: null,
   activeChatPartner: null,
 
+  theme: (typeof window !== 'undefined' ? localStorage.getItem('theme') as 'light' | 'dark' : 'light') || 'light',
+  toggleTheme: () => {
+    const nextTheme = get().theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', nextTheme);
+    if (nextTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    set({ theme: nextTheme });
+  },
+
   init: async () => {
+    // Apply current theme on initialize
+    const currentTheme = get().theme;
+    if (currentTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
     set({ isLoading: true, error: null });
     try {
       // Set tenant fallback status checks

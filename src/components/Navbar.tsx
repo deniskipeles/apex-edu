@@ -4,7 +4,7 @@ import { useStore } from '../store/useStore';
 import { 
   GraduationCap, Wallet, LogOut, MessageSquare, BookOpen, Users, 
   LayoutDashboard, Menu, X, PlusCircle, Coins, Database, AlertTriangle, 
-  CheckCircle, RefreshCw, Sliders, Globe, HelpCircle 
+  CheckCircle, RefreshCw, Sliders, Globe, HelpCircle, Sun, Moon 
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -21,7 +21,9 @@ export default function Navbar({ onOpenDeposit, onOpenNewAssignment }: NavbarPro
     isTenantFallback,
     missingCollections,
     switchTenant,
-    simulateMissingCollection
+    simulateMissingCollection,
+    theme,
+    toggleTheme
   } = useStore();
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,7 +46,7 @@ export default function Navbar({ onOpenDeposit, onOpenNewAssignment }: NavbarPro
   const isSelected = (path: string) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm" id="main_navbar">
+    <nav className="sticky top-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-colors duration-200" id="main_navbar">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo Brand */}
@@ -53,7 +55,7 @@ export default function Navbar({ onOpenDeposit, onOpenNewAssignment }: NavbarPro
               <div className="bg-sky-600 text-white p-2 rounded-xl shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform duration-200">
                 <GraduationCap className="w-6 h-6" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-slate-800 heading-font">
+              <span className="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100 heading-font">
                 Edu<span className="text-sky-600 font-medium">Solve</span>
               </span>
             </Link>
@@ -226,6 +228,20 @@ export default function Navbar({ onOpenDeposit, onOpenNewAssignment }: NavbarPro
 
           {/* Right Side Desktop Controls */}
           <div className="hidden md:flex md:items-center md:gap-4">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200/50 dark:border-slate-800/60 transition-all cursor-pointer flex items-center justify-center bg-white dark:bg-slate-900 shadow-sm"
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              id="theme_toggle_btn"
+            >
+              {theme === 'light' ? (
+                <Moon className="w-4.5 h-4.5 text-slate-600" />
+              ) : (
+                <Sun className="w-4.5 h-4.5 text-amber-400" />
+              )}
+            </button>
+
             {isAuthenticated ? (
               <>
                 {/* Balance display for students, Earnings display for tutors */}
@@ -308,6 +324,20 @@ export default function Navbar({ onOpenDeposit, onOpenNewAssignment }: NavbarPro
 
           {/* Mobile Menu Buttons */}
           <div className="flex items-center md:hidden gap-2">
+            {/* Theme Toggle Mobile */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-slate-200/50 dark:border-slate-800/60 transition-all cursor-pointer flex items-center justify-center bg-white dark:bg-slate-900 shadow-sm"
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              id="theme_toggle_mobile"
+            >
+              {theme === 'light' ? (
+                <Moon className="w-5 h-5 text-slate-600" />
+              ) : (
+                <Sun className="w-5 h-5 text-amber-400" />
+              )}
+            </button>
+
             {isAuthenticated && currentUser?.role === 'student' && (
               <button
                 onClick={onOpenNewAssignment}

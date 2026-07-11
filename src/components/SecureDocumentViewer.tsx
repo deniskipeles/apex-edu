@@ -192,33 +192,33 @@ export default function SecureDocumentViewer({ isOpen, onClose, fileName }: Secu
       {/* Sliding Drawer Panel */}
       <div 
         id="secure-document-drawer"
-        className="fixed inset-y-0 right-0 z-[70] w-full lg:w-1/2 h-full bg-slate-50 flex flex-col shadow-2xl border-l border-slate-200 transition-transform duration-300 ease-in-out transform animate-in slide-in-from-right"
+        className="fixed inset-y-0 right-0 z-[70] w-full lg:w-1/2 h-full bg-slate-50 dark:bg-slate-900 flex flex-col shadow-2xl border-l border-slate-200 dark:border-slate-800 transition-transform duration-300 ease-in-out transform animate-in slide-in-from-right"
       >
         {/* Floating Quick Close Overlay Button for desktop (just outside the drawer) */}
         <button
           onClick={onClose}
-          className="hidden lg:flex absolute -left-12 top-4 p-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-l-xl border border-r-0 border-slate-800 transition-colors shadow-lg cursor-pointer"
+          className="hidden lg:flex absolute -left-12 top-4 p-2 bg-slate-900/80 hover:bg-slate-900 text-white rounded-l-xl border border-r-0 border-slate-800 dark:border-slate-700 transition-colors shadow-lg cursor-pointer"
           title="Exit Viewer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Drawer Header */}
-        <div className="bg-white border-b border-slate-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 z-10 shrink-0">
+        <div className="bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 z-10 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl shrink-0">
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div className="overflow-hidden">
               <div className="flex items-center gap-1.5">
-                <h3 className="font-bold text-slate-800 text-sm heading-font">
+                <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm heading-font">
                   Secure Document Reader
                 </h3>
-                <span className="flex items-center gap-0.5 text-[9px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                <span className="flex items-center gap-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50 px-1.5 py-0.5 rounded uppercase tracking-wider">
                   <Lock className="w-2.5 h-2.5" /> SECURE
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 truncate font-semibold mt-0.5" title={fileName}>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate font-semibold mt-0.5" title={fileName}>
                 {fileName}
               </p>
             </div>
@@ -227,13 +227,13 @@ export default function SecureDocumentViewer({ isOpen, onClose, fileName }: Secu
           <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
             {/* Tab selection for SVG/HTML */}
             {(fileType === 'svg' || fileType === 'html') && (
-              <div className="flex bg-slate-100 p-1 rounded-xl">
+              <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
                 <button
                   onClick={() => setActiveTab('preview')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     activeTab === 'preview' 
-                      ? 'bg-white text-sky-600 shadow-sm' 
-                      : 'text-slate-500 hover:text-slate-800'
+                      ? 'bg-white dark:bg-slate-850 text-sky-600 dark:text-sky-400 shadow-sm' 
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   <Eye className="w-3 h-3" /> Preview
@@ -242,8 +242,8 @@ export default function SecureDocumentViewer({ isOpen, onClose, fileName }: Secu
                   onClick={() => setActiveTab('source')}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                     activeTab === 'source' 
-                      ? 'bg-white text-sky-600 shadow-sm' 
-                      : 'text-slate-500 hover:text-slate-800'
+                      ? 'bg-white dark:bg-slate-850 text-sky-600 dark:text-sky-400 shadow-sm' 
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   }`}
                 >
                   <Code className="w-3 h-3" /> Code
@@ -254,7 +254,7 @@ export default function SecureDocumentViewer({ isOpen, onClose, fileName }: Secu
             {/* Main Header Close Icon */}
             <button 
               onClick={onClose} 
-              className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 rounded-xl transition-all cursor-pointer"
+              className="p-2 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-450 hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-transparent hover:border-rose-100 dark:hover:border-rose-900/40 rounded-xl transition-all cursor-pointer"
               title="Close secure viewer"
               aria-label="Close"
             >
@@ -264,29 +264,29 @@ export default function SecureDocumentViewer({ isOpen, onClose, fileName }: Secu
         </div>
 
         {/* Dynamic Interactive Reading Toolbar */}
-        <div className="bg-slate-100/80 border-b border-slate-200 px-4 py-2 flex items-center justify-between shrink-0 text-slate-600 text-xs gap-3">
+        <div className="bg-slate-100/80 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 px-4 py-2 flex items-center justify-between shrink-0 text-slate-600 dark:text-slate-400 text-xs gap-3">
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleZoomOut}
-              className="p-1 hover:bg-white rounded-lg transition-colors cursor-pointer"
+              className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
               title="Zoom Out"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
-            <span className="font-mono text-[10px] font-bold min-w-[36px] text-center bg-white/55 px-1.5 py-0.5 rounded">
+            <span className="font-mono text-[10px] font-bold min-w-[36px] text-center bg-white/55 dark:bg-slate-900 px-1.5 py-0.5 rounded text-slate-800 dark:text-slate-200">
               {zoomLevel}%
             </span>
             <button
               onClick={handleZoomIn}
-              className="p-1 hover:bg-white rounded-lg transition-colors cursor-pointer"
+              className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
               title="Zoom In"
             >
               <ZoomIn className="w-4 h-4" />
             </button>
-            <span className="w-px h-3 bg-slate-300 mx-1"></span>
+            <span className="w-px h-3 bg-slate-300 dark:bg-slate-800 mx-1"></span>
             <button
               onClick={handleRotate}
-              className="p-1 hover:bg-white rounded-lg transition-colors cursor-pointer"
+              className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
               title="Rotate Document"
             >
               <RotateCw className="w-3.5 h-3.5" />
@@ -299,7 +299,7 @@ export default function SecureDocumentViewer({ isOpen, onClose, fileName }: Secu
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-1 hover:bg-white text-slate-700 disabled:opacity-30 rounded cursor-pointer"
+                  className="p-1 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 disabled:opacity-30 rounded cursor-pointer"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
@@ -309,36 +309,36 @@ export default function SecureDocumentViewer({ isOpen, onClose, fileName }: Secu
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="p-1 hover:bg-white text-slate-700 disabled:opacity-30 rounded cursor-pointer"
+                  className="p-1 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 disabled:opacity-30 rounded cursor-pointer"
                 >
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             )}
-            <span className="text-[10px] bg-slate-200 text-slate-600 font-bold px-2 py-0.5 rounded font-mono uppercase">
+            <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold px-2 py-0.5 rounded font-mono uppercase">
               {fileType}
             </span>
           </div>
         </div>
 
         {/* Reader Display Panel */}
-        <div className="flex-1 overflow-auto p-4 sm:p-6 bg-slate-200/40 flex flex-col items-center">
+        <div className="flex-1 overflow-auto p-4 sm:p-6 bg-slate-200/40 dark:bg-slate-950/20 flex flex-col items-center">
           <div 
             style={{ 
               transform: `scale(${zoomLevel / 100}) rotate(${rotation}deg)`,
               transformOrigin: 'top center',
               transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
-            className="w-full max-w-2xl bg-white shadow-md border border-slate-200 rounded-2xl overflow-hidden min-h-[500px] flex flex-col"
+            className="w-full max-w-2xl bg-white dark:bg-slate-900 shadow-md border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden min-h-[500px] flex flex-col"
           >
             {/* SVG Viewer File Type */}
             {fileType === 'svg' && (
               activeTab === 'preview' ? (
-                <div className="p-8 flex-1 flex flex-col justify-center items-center bg-slate-50/50">
-                  <div className="w-full max-w-md p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div className="p-8 flex-1 flex flex-col justify-center items-center bg-slate-50/50 dark:bg-slate-950/20">
+                  <div className="w-full max-w-md p-4 bg-white dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-850 shadow-sm">
                     <div dangerouslySetInnerHTML={{ __html: mockSvgSource }} />
                   </div>
-                  <div className="mt-6 flex items-center gap-2 text-slate-400 text-[10px] font-semibold bg-white px-3 py-1.5 rounded-full border border-slate-200">
+                  <div className="mt-6 flex items-center gap-2 text-slate-400 dark:text-slate-500 text-[10px] font-semibold bg-white dark:bg-slate-950 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-850">
                     <Compass className="w-3.5 h-3.5 text-sky-500 animate-spin" /> Interactive Vector SVG Display (High Fidelity)
                   </div>
                 </div>
@@ -358,13 +358,13 @@ export default function SecureDocumentViewer({ isOpen, onClose, fileName }: Secu
             {/* HTML Viewer File Type */}
             {fileType === 'html' && (
               activeTab === 'preview' ? (
-                <div className="p-6 flex-1 flex flex-col bg-slate-100/30">
-                  <div className="flex-1 rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                <div className="p-6 flex-1 flex flex-col bg-slate-100/30 dark:bg-slate-950/20">
+                  <div className="flex-1 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
                     <iframe 
                       title="HTML Preview Sandboxed"
                       srcDoc={mockHtmlSource}
                       sandbox="allow-same-origin"
-                      className="w-full h-full min-h-[450px] bg-white border-0"
+                      className="w-full h-full min-h-[450px] bg-white dark:bg-slate-900 border-0"
                     />
                   </div>
                 </div>
@@ -404,19 +404,19 @@ console.log("Validation system matrix convergence status: OK");`}</pre>
 
             {/* Standard generic PDF / Document Multi-Page mockup */}
             {fileType === 'document' && (
-              <div className="p-8 flex-1 flex flex-col items-center justify-center text-slate-400">
-                <FileText className="w-16 h-16 mb-4 text-slate-200" />
-                <h4 className="text-sm font-semibold text-slate-700">Multi-page Solution Document (Page {currentPage} of {totalPages})</h4>
+              <div className="p-8 flex-1 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+                <FileText className="w-16 h-16 mb-4 text-slate-200 dark:text-slate-800" />
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Multi-page Solution Document (Page {currentPage} of {totalPages})</h4>
                 
-                <div className="w-full mt-6 space-y-3 max-w-md bg-slate-50 p-4 border border-slate-100 rounded-xl leading-relaxed">
-                  <div className="h-3 w-1/3 bg-slate-200 rounded"></div>
-                  <div className="h-2 w-full bg-slate-200/70 rounded"></div>
-                  <div className="h-2 w-full bg-slate-200/70 rounded"></div>
-                  <div className="h-2 w-2/3 bg-slate-200/70 rounded"></div>
+                <div className="w-full mt-6 space-y-3 max-w-md bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800 rounded-xl leading-relaxed">
+                  <div className="h-3 w-1/3 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                  <div className="h-2 w-full bg-slate-200/70 dark:bg-slate-800/70 rounded"></div>
+                  <div className="h-2 w-full bg-slate-200/70 dark:bg-slate-800/70 rounded"></div>
+                  <div className="h-2 w-2/3 bg-slate-200/70 dark:bg-slate-800/70 rounded"></div>
                 </div>
 
-                <div className="text-[11px] mt-6 text-slate-400 max-w-md text-center px-6 leading-relaxed bg-slate-50 p-4 border border-slate-100 rounded-xl">
-                  <p className="mb-2"><strong className="text-slate-600">EduSolve Guard active.</strong></p>
+                <div className="text-[11px] mt-6 text-slate-400 dark:text-slate-500 max-w-md text-center px-6 leading-relaxed bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800 rounded-xl">
+                  <p className="mb-2"><strong className="text-slate-600 dark:text-slate-400">EduSolve Guard active.</strong></p>
                   Documents are safely prepared at the cloud edge. Dynamic page conversion prevents local file downloading and guarantees that content is viewed only within the secure container.
                 </div>
               </div>
@@ -425,8 +425,8 @@ console.log("Validation system matrix convergence status: OK");`}</pre>
         </div>
 
         {/* Drawer Footer Safe Label */}
-        <div className="bg-white border-t border-slate-200 px-6 py-4 flex items-center justify-between shrink-0">
-          <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+        <div className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
+          <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-emerald-500" /> Sandboxed Read-Only View
           </span>
           <button 
