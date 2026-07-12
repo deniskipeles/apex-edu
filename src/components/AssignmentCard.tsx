@@ -26,7 +26,7 @@ export default function AssignmentCard({
   const [showBidsPanel, setShowBidsPanel] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState('');
-  
+
   // Delivery Upload Modal states
   const [deliveryModalOpen, setDeliveryModalOpen] = useState(false);
   const [solutionFiles, setSolutionFiles] = useState<File[]>([]);
@@ -77,8 +77,8 @@ export default function AssignmentCard({
     setSolutionFiles([]);
   };
 
-  // Filter bids for this specific assignment
-  const assignmentBids = bids.filter((b) => b.assignmentId === assignment.id);
+  // Filter bids for this specific assignment using safe-casted ID comparison
+  const assignmentBids = bids.filter((b) => String(b.assignmentId) === String(assignment.id));
 
   // Status mapping styled pill
   const getStatusBadge = () => {
@@ -106,7 +106,7 @@ export default function AssignmentCard({
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
-  const isStudentOwner = currentUser?.id === assignment.studentId;
+  const isStudentOwner = String(currentUser?.id) === String(assignment.studentId);
   const isTutorCandidate = currentUser?.role === 'tutor';
 
   return (

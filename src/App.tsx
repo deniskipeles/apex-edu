@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from './store/useStore';
 
 // Components
@@ -13,11 +12,20 @@ import Dashboard from './pages/Dashboard';
 import TutorProfiles from './pages/TutorProfiles';
 import Courses from './pages/Courses';
 import AuthPage from './pages/AuthPage';
+import React, { useEffect, useState } from 'react';
 
 // Simple Route Protection Guard
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useStore();
-  
+  const navigate = useNavigate();
+
+  // Safely trigger navigation side-effects on state transitions unconditionally
+  React.useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate('/auth', { replace: true });
+    }
+  }, [isLoading, isAuthenticated, navigate]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
@@ -27,7 +35,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" replace />;
+  return isAuthenticated ? <>{children}</> : null;
 }
 
 // Global App Layout wrapper to access React Router location hooks safely
@@ -39,7 +47,7 @@ function AppLayout() {
   // Initialize data stores on startup
   useEffect(() => {
     init();
-  }, [init]);
+  }, []); // Run exactly once on mount
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 flex flex-col text-slate-900 dark:text-slate-100 selection:bg-sky-500/10 selection:text-sky-700 transition-colors duration-200">

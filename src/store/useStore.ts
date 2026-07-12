@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { ApexKit, ApexKitRealtimeWSClient, browserDB } from '../lib/apexClient';
+import { ApexKit, ApexKitRealtimeWSClient } from '../lib/apexClient';
 import { UserProfile, Assignment, Bid, Message, Course, Review, PaymentTransaction } from '../types';
 
-// Instantiate ApexKit pointing to a mockup endpoint, with the 'apex-assignment-help' tenant by default
-let apex = new ApexKit('https://api.apexkit.edu').tenant('apex-assignment-help');
+// Instantiate the production-ready ApexKit client
+let apex: ApexKit = new ApexKit("https://kipeles-vs--5000.hf.space").tenant('apex-assignment-help') as ApexKit;
 
 interface AppState {
   apex: ApexKit;
@@ -55,7 +55,7 @@ interface AppState {
   releasePayment: (assignmentId: string) => Promise<void>;
 
   // Chat Actions
-  startChat: (tutorId: string, assignmentId?: string) => void;
+  startChat: (tutorId: string, assignmentId?: string) => Promise<void>;
   fetchMessages: (chatRoomId: string) => Promise<void>;
   sendMessage: (text: string, file?: File) => Promise<void>;
 
@@ -108,7 +108,6 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   init: async () => {
-    // Apply current theme on initialize
     const currentTheme = get().theme;
     if (currentTheme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -118,28 +117,25 @@ export const useStore = create<AppState>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
-      // Set tenant fallback status checks
-      const status = apex.getTenantStatus();
+      const status = typeof apex.getTenantStatus === 'function' 
+        ? apex.getTenantStatus() 
+        : { tenantId: 'root', fallbackActive: false };
+
       set({
         tenantId: status.tenantId,
         isTenantFallback: status.fallbackActive,
-        missingCollections: [...apex.missingCollectionsHandled]
+        missingCollections: [...(apex.missingCollectionsHandled || [])]
       });
 
-      // 1. Setup WS Client if token exists
       const token = apex.getToken();
       let ws: ApexKitRealtimeWSClient | null = null;
       if (token) {
-        ws = new ApexKitRealtimeWSClient('https://api.apexkit.edu', token);
+        ws = new ApexKitRealtimeWSClient(apex.baseUrl, token);
         ws.connect();
         
-        // Listen to live message events
         ws.onEvent((msg: any) => {
           if (msg.type === 'Signal' && msg.event === 'NewMessage') {
             const receivedMsg = msg.payload as Message;
-            const currentChatRoom = get().activeChatRoomId;
-            
-            // Append message to state if it fits the general or active chatroom
             set((state) => {
               const updatedMessages = [...state.messages];
               if (!updatedMessages.some(m => m.id === receivedMsg.id)) {
@@ -151,46 +147,133 @@ export const useStore = create<AppState>((set, get) => ({
         });
       }
 
-      // 2. Fetch authenticated user profile
       let profile: UserProfile | null = null;
       if (token) {
-        const user = await apex.auth.getMe();
-        profile = {
-          id: user.id,
-          email: user.email,
-          role: user.role as 'student' | 'tutor',
-          name: user.metadata?.name || '',
-          avatar: user.metadata?.avatar || '',
-          bio: user.metadata?.bio || '',
-          expertise: user.metadata?.expertise || [],
-          hourlyRate: user.metadata?.hourlyRate || 0,
-          completedTasks: user.metadata?.completedTasks || 0,
-          balance: user.metadata?.balance ?? 0,
-          reviewsCount: user.metadata?.reviewsCount || 0,
-          enrolledCourseIds: user.metadata?.enrolledCourseIds || []
-        };
+        try {
+          const user = await apex.auth.getMe();
+          
+          // Query the users_profiles collection for the profile record owned by this system user
+          const userProfileRes = await apex.collection('users_profiles').list({
+            filter: JSON.stringify({ user_id: user.id })
+          });
+
+          const profileRecord = userProfileRes.items[0];
+
+          if (profileRecord) {
+            // Unfold the profile record schema and map its unique ID
+            const profileData = {
+              id: String(profileRecord.id), // The unique users_profiles record ID
+              ...profileRecord.data
+            };
+
+            profile = {
+              id: profileData.id, // Overwrite profile.id with the relational users_profiles ID
+              email: user.email,
+              role: user.role as 'student' | 'tutor',
+              name: profileData.name || '',
+              avatar: profileData.avatar || '',
+              bio: profileData.bio || '',
+              expertise: profileData.expertise || [],
+              hourlyRate: Number(profileData.hourlyRate) || 0,
+              completedTasks: Number(profileData.completedTasks) || 0,
+              balance: Number(profileData.balance) ?? 0,
+              reviewsCount: Number(profileData.reviewsCount) || 0,
+              enrolledCourseIds: profileData.enrolledCourseIds || []
+            };
+          } else {
+            // Fallback to system profile structure if users_profiles is not seeded yet
+            profile = {
+              id: user.id,
+              email: user.email,
+              role: user.role as 'student' | 'tutor',
+              name: user.metadata?.name || '',
+              avatar: user.metadata?.avatar || '',
+              bio: user.metadata?.bio || '',
+              expertise: user.metadata?.expertise || [],
+              hourlyRate: user.metadata?.hourlyRate || 0,
+              completedTasks: user.metadata?.completedTasks || 0,
+              balance: user.metadata?.balance ?? 0,
+              reviewsCount: user.metadata?.reviewsCount || 0,
+              enrolledCourseIds: user.metadata?.enrolledCourseIds || []
+            };
+          }
+        } catch (authErr) {
+          console.warn('[Store] Session token invalid or expired. Clearing credentials.', authErr);
+          apex.auth.logout();
+        }
       }
 
-      // 3. Load all resources
-      const coursesRes = await apex.collection('courses').list();
-      const tutorsRes = await apex.collection('users_profiles').list();
-      const assignmentsRes = await apex.collection('assignments').list();
-      const bidsRes = await apex.collection('bids').list();
-      const reviewsRes = await apex.collection('tutors_reviews').list();
-      const paymentsRes = await apex.collection('payments').list();
+      // Fetch all collections concurrently with fallback protection to prevent cascading failures
+      const [
+        coursesRes,
+        tutorsRes,
+        assignmentsRes,
+        bidsRes,
+        reviewsRes,
+        paymentsRes
+      ] = await Promise.all([
+        apex.collection('courses').list().catch(() => ({ items: [] })),
+        apex.collection('users_profiles').list().catch(() => ({ items: [] })),
+        apex.collection('assignments').list().catch(() => ({ items: [] })),
+        apex.collection('bids').list().catch(() => ({ items: [] })),
+        apex.collection('tutors_reviews').list().catch(() => ({ items: [] })),
+        apex.collection('payments').list().catch(() => ({ items: [] }))
+      ]);
 
-      const registeredTutors = (tutorsRes.items as any[]).filter(u => u.role === 'tutor');
+      const courses = (coursesRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Course[];
+
+      const tutors = (tutorsRes.items as any[])
+        .map(item => ({
+          id: String(item.id),
+          ...item.data,
+          created: item.created,
+          updated: item.updated
+        }))
+        .filter(u => u.role === 'tutor') as unknown as UserProfile[];
+
+      const assignments = (assignmentsRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Assignment[];
+
+      const bids = (bidsRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Bid[];
+
+      const reviews = (reviewsRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Review[];
+
+      const payments = (paymentsRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as PaymentTransaction[];
 
       set({
         wsClient: ws,
         currentUser: profile,
         isAuthenticated: !!profile,
-        courses: coursesRes.items as Course[],
-        tutors: registeredTutors,
-        assignments: assignmentsRes.items as Assignment[],
-        bids: bidsRes.items as Bid[],
-        reviews: reviewsRes.items as Review[],
-        payments: paymentsRes.items as PaymentTransaction[],
+        courses,
+        tutors,
+        assignments,
+        bids,
+        reviews,
+        payments,
         isLoading: false,
       });
 
@@ -204,6 +287,9 @@ export const useStore = create<AppState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await apex.auth.login(email, password);
+
+      // Explicitly trigger token synchronization with localStorage
+      apex.setToken(res.token, res.user);
       
       const userProfile: UserProfile = {
         id: res.user.id,
@@ -226,7 +312,6 @@ export const useStore = create<AppState>((set, get) => ({
         isLoading: false,
       });
 
-      // Recalibrate SDK connections
       await get().init();
       return true;
     } catch (err: any) {
@@ -247,14 +332,16 @@ export const useStore = create<AppState>((set, get) => ({
         expertise: extra.expertise || [],
         hourlyRate: extra.hourlyRate ? Number(extra.hourlyRate) : 35,
         completedTasks: 0,
-        balance: role === 'student' ? 300 : 0, // Students get $300 starter budget for demo!
+        balance: role === 'student' ? 300 : 0,
         reviewsCount: 0
       };
 
-      await apex.auth.register(email, password, metadata);
+      const res = await apex.auth.register(email, password, metadata, role);
+      
+      // Explicitly trigger token synchronization with localStorage
+      apex.setToken(res.token, res.user);
       
       set({ isLoading: false });
-      // Authenticate directly
       return await get().login(email, password);
     } catch (err: any) {
       set({ isLoading: false, error: err.message || 'Registration failed' });
@@ -281,7 +368,6 @@ export const useStore = create<AppState>((set, get) => ({
     if (!get().currentUser) return;
     set({ isLoading: true, error: null });
     try {
-      // Save to server/localStorage profiles
       await apex.auth.updateMe(updates);
       
       set((state) => ({
@@ -289,9 +375,15 @@ export const useStore = create<AppState>((set, get) => ({
         isLoading: false,
       }));
 
-      // Reload tutors list in case current user was a tutor
       const tutorsRes = await apex.collection('users_profiles').list();
-      const registeredTutors = (tutorsRes.items as any[]).filter(u => u.role === 'tutor');
+      const registeredTutors = (tutorsRes.items as any[])
+        .map(item => ({
+          id: String(item.id),
+          ...item.data,
+          created: item.created,
+          updated: item.updated
+        }))
+        .filter(u => u.role === 'tutor') as unknown as UserProfile[];
       set({ tutors: registeredTutors });
     } catch (err: any) {
       set({ isLoading: false, error: err.message || 'Failed to update profile' });
@@ -314,7 +406,13 @@ export const useStore = create<AppState>((set, get) => ({
   fetchAssignments: async () => {
     try {
       const res = await apex.collection('assignments').list();
-      set({ assignments: res.items as Assignment[] });
+      const unfolded = (res.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Assignment[];
+      set({ assignments: unfolded });
     } catch (err) {
       console.error('Error fetching assignments', err);
     }
@@ -326,7 +424,6 @@ export const useStore = create<AppState>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
-      // 1. Upload files if any
       const fileUrls: { name: string; url: string; size: number }[] = [];
       for (const file of files) {
         const uploaded = await apex.files.upload(file);
@@ -337,29 +434,27 @@ export const useStore = create<AppState>((set, get) => ({
         });
       }
 
-      // 2. Fetch course code
       const course = get().courses.find(c => c.id === courseId);
       const courseCode = course ? course.code : 'GEN';
 
-      // 3. Create assignment request
-      const newAssignment: Partial<Assignment> = {
+      const newAssignment = {
         title,
         description,
         courseId,
         courseCode,
         budget: Number(budget),
-        deadline,
+        deadline: new Date(deadline).toISOString(), // Convert to fully qualified UTC ISO 8601 string
         studentId: user.id,
         studentName: user.name,
         status: 'open',
-        fileUrls,
+        fileUrls: fileUrls || [], // Guarantee a valid JSON array structure
+        solutionUrls: [],        // Explicitly initialize with an empty JSON array
         bidsCount: 0,
         createdAt: new Date().toISOString()
       };
 
-      await apex.collection('assignments').create({ data: newAssignment });
+      await apex.collection('assignments').create(newAssignment);
       
-      // Update state
       await get().fetchAssignments();
       set({ isLoading: false });
     } catch (err: any) {
@@ -371,7 +466,7 @@ export const useStore = create<AppState>((set, get) => ({
   cancelAssignment: async (assignmentId) => {
     set({ isLoading: true });
     try {
-      await apex.collection('assignments').update(assignmentId, { data: { status: 'cancelled' } });
+      await apex.collection('assignments').update(assignmentId, { status: 'cancelled' });
       await get().fetchAssignments();
       set({ isLoading: false });
     } catch (err: any) {
@@ -388,7 +483,7 @@ export const useStore = create<AppState>((set, get) => ({
       const assignment = get().assignments.find(a => a.id === assignmentId);
       if (!assignment) throw new Error('Assignment not found');
 
-      const newBid: Partial<Bid> = {
+      const newBid = {
         assignmentId,
         assignmentTitle: assignment.title,
         tutorId: user.id,
@@ -400,11 +495,17 @@ export const useStore = create<AppState>((set, get) => ({
         createdAt: new Date().toISOString()
       };
 
-      await apex.collection('bids').create({ data: newBid });
+      await apex.collection('bids').create(newBid);
 
-      // Refresh assignments & bids list
       const bidsRes = await apex.collection('bids').list();
-      set({ bids: bidsRes.items as Bid[] });
+      const unfoldedBids = (bidsRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Bid[];
+
+      set({ bids: unfoldedBids });
       await get().fetchAssignments();
       set({ isLoading: false });
     } catch (err: any) {
@@ -427,12 +528,10 @@ export const useStore = create<AppState>((set, get) => ({
         throw new Error('Insufficient wallet balance. Please add funds using the Payment Gateway first!');
       }
 
-      // 1. Escrow Payment - Deduct from student balance
       const newStudentBalance = (student.balance || 0) - bid.amount;
       await get().updateProfile({ balance: newStudentBalance });
 
-      // 2. Create Escrow Transaction record
-      const transaction: Partial<PaymentTransaction> = {
+      const transaction = {
         assignmentId,
         assignmentTitle: assignment.title,
         studentId: student.id,
@@ -444,27 +543,29 @@ export const useStore = create<AppState>((set, get) => ({
         stripePaymentId: 'ch_stripe_' + Math.random().toString(36).substr(2, 12),
         createdAt: new Date().toISOString()
       };
-      await apex.collection('payments').create({ data: transaction });
+      await apex.collection('payments').create(transaction);
 
-      // 3. Assign tutor to contract and mark as Active
       await apex.collection('assignments').update(assignmentId, {
-        data: {
-          tutorId: bid.tutorId,
-          tutorName: bid.tutorName,
-          status: 'active'
-        }
+        tutorId: bid.tutorId,
+        tutorName: bid.tutorName,
+        status: 'active'
       });
 
-      // 4. Reload lists
       await get().fetchAssignments();
       const payRes = await apex.collection('payments').list();
+      const unfoldedPayments = (payRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as PaymentTransaction[];
+
       set({
-        payments: payRes.items as PaymentTransaction[],
+        payments: unfoldedPayments,
         isLoading: false
       });
 
-      // 5. Instantly open chat room with selected tutor
-      get().startChat(bid.tutorId, assignmentId);
+      await get().startChat(bid.tutorId, assignmentId);
 
     } catch (err: any) {
       set({ isLoading: false, error: err.message || 'Payment or contract execution failed' });
@@ -476,10 +577,8 @@ export const useStore = create<AppState>((set, get) => ({
     set({ isLoading: true });
     try {
       await apex.collection('assignments').update(assignmentId, {
-        data: {
-          status: 'completed',
-          solutionUrls: solutionUrls || []
-        }
+        status: 'completed',
+        solutionUrls: solutionUrls || []
       });
       await get().fetchAssignments();
       set({ isLoading: false });
@@ -494,34 +593,36 @@ export const useStore = create<AppState>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
-      // 1. Find payment in escrow
       const payments = get().payments;
       const tx = payments.find(p => p.assignmentId === assignmentId && p.status === 'escrow');
       if (!tx) throw new Error('Active escrow transaction not found');
 
-      // 2. Update transaction status on server/local storage
-      await apex.collection('payments').update(tx.id, { data: { status: 'released' } });
+      await apex.collection('payments').update(tx.id, { status: 'released' });
+      await apex.collection('assignments').update(assignmentId, { status: 'paid' });
 
-      // 3. Credit Tutor's balance
-      const tutorsProfiles = browserDB.get<any>('users_profiles');
-      const tutorIndex = tutorsProfiles.findIndex(t => t.id === tx.tutorId);
-      if (tutorIndex !== -1) {
-        tutorsProfiles[tutorIndex].balance = (tutorsProfiles[tutorIndex].balance || 0) + tx.amount;
-        tutorsProfiles[tutorIndex].completedTasks = (tutorsProfiles[tutorIndex].completedTasks || 0) + 1;
-        browserDB.save('users_profiles', tutorsProfiles);
-      }
-
-      // 4. Update assignment status to Paid
-      await apex.collection('assignments').update(assignmentId, { data: { status: 'paid' } });
-
-      // 5. Reload lists
       await get().fetchAssignments();
+      
       const payRes = await apex.collection('payments').list();
+      const unfoldedPayments = (payRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as PaymentTransaction[];
+
       const tutorsRes = await apex.collection('users_profiles').list();
+      const unfoldedTutors = (tutorsRes.items as any[])
+        .map(item => ({
+          id: String(item.id),
+          ...item.data,
+          created: item.created,
+          updated: item.updated
+        }))
+        .filter(u => u.role === 'tutor') as unknown as UserProfile[];
       
       set({
-        payments: payRes.items as PaymentTransaction[],
-        tutors: (tutorsRes.items as any[]).filter(u => u.role === 'tutor'),
+        payments: unfoldedPayments,
+        tutors: unfoldedTutors,
         isLoading: false
       });
 
@@ -531,11 +632,10 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
-  startChat: (tutorId, assignmentId) => {
+  startChat: async (tutorId, assignmentId) => {
     const user = get().currentUser;
     if (!user) return;
 
-    // Chatroom standard ID formulation: "studentId_tutorId"
     let chatRoomId = '';
     let partnerId = '';
     
@@ -544,17 +644,30 @@ export const useStore = create<AppState>((set, get) => ({
       partnerId = tutorId;
     } else {
       chatRoomId = `${tutorId}_${user.id}`;
-      partnerId = tutorId; // in tutor mode, tutorId parameter behaves as studentId
+      partnerId = tutorId;
     }
 
-    const partnerProfile = browserDB.get<UserProfile>('users_profiles').find(p => p.id === partnerId);
+    let partnerProfile = get().tutors.find(p => p.id === partnerId);
+    if (!partnerProfile) {
+      try {
+        const res = await apex.collection('users_profiles').get(partnerId);
+        partnerProfile = {
+          id: String(res.id),
+          ...res.data,
+          created: res.created,
+          updated: res.updated
+        } as unknown as UserProfile;
+      } catch (e) {
+        console.error('Failed to fetch partner profile:', e);
+      }
+    }
 
     set({
       activeChatRoomId: chatRoomId,
       activeChatPartner: partnerProfile || null
     });
 
-    get().fetchMessages(chatRoomId);
+    await get().fetchMessages(chatRoomId);
   },
 
   fetchMessages: async (chatRoomId) => {
@@ -562,7 +675,13 @@ export const useStore = create<AppState>((set, get) => ({
       const res = await apex.collection('messages').list({
         filter: JSON.stringify({ chatRoomId })
       });
-      set({ messages: res.items as Message[] });
+      const unfolded = (res.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Message[];
+      set({ messages: unfolded });
     } catch (err) {
       console.error('Error fetching chat messages', err);
     }
@@ -593,19 +712,21 @@ export const useStore = create<AppState>((set, get) => ({
         file: filePayload
       };
 
-      // If WS is connected, send signal. WS Client handler automatically updates local DB on server simulation
       if (get().wsClient && get().wsClient?.isConnected) {
         get().wsClient?.sendSignal(room, 'NewMessage', msgData);
       } else {
-        // Direct local storage backup fallback
         const now = new Date().toISOString();
         const savedMsg = await apex.collection('messages').create({
-          data: {
-            ...msgData,
-            createdAt: now
-          }
+          ...msgData,
+          createdAt: now
         });
-        set((state) => ({ messages: [...state.messages, savedMsg as unknown as Message] }));
+        const unfoldedMsg = {
+          id: String(savedMsg.id),
+          ...savedMsg.data,
+          created: savedMsg.created,
+          updated: savedMsg.updated
+        } as unknown as Message;
+        set((state) => ({ messages: [...state.messages, unfoldedMsg] }));
       }
 
     } catch (err) {
@@ -618,7 +739,7 @@ export const useStore = create<AppState>((set, get) => ({
     if (!student) throw new Error('Unauthorized');
 
     try {
-      const review: Partial<Review> = {
+      const review = {
         tutorId,
         studentName: student.name,
         rating,
@@ -627,28 +748,29 @@ export const useStore = create<AppState>((set, get) => ({
         createdAt: new Date().toISOString()
       };
 
-      await apex.collection('tutors_reviews').create({ data: review });
+      await apex.collection('tutors_reviews').create(review);
 
-      // Recalculate tutor's rating average and review count
-      const reviewsList = browserDB.get<Review>('tutors_reviews').filter(r => r.tutorId === tutorId);
-      const totalRating = reviewsList.reduce((sum, r) => sum + r.rating, 0);
-      const averageRating = reviewsList.length > 0 ? Number((totalRating / reviewsList.length).toFixed(1)) : 5;
-
-      const profiles = browserDB.get<any>('users_profiles');
-      const idx = profiles.findIndex(p => p.id === tutorId);
-      if (idx !== -1) {
-        profiles[idx].rating = averageRating;
-        profiles[idx].reviewsCount = reviewsList.length;
-        browserDB.save('users_profiles', profiles);
-      }
-
-      // Reload resources
       const reviewsRes = await apex.collection('tutors_reviews').list();
+      const unfoldedReviews = (reviewsRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Review[];
+
       const tutorsRes = await apex.collection('users_profiles').list();
+      const unfoldedTutors = (tutorsRes.items as any[])
+        .map(item => ({
+          id: String(item.id),
+          ...item.data,
+          created: item.created,
+          updated: item.updated
+        }))
+        .filter(u => u.role === 'tutor') as unknown as UserProfile[];
       
       set({
-        reviews: reviewsRes.items as Review[],
-        tutors: (tutorsRes.items as any[]).filter(u => u.role === 'tutor')
+        reviews: unfoldedReviews,
+        tutors: unfoldedTutors
       });
 
     } catch (err) {
@@ -666,9 +788,15 @@ export const useStore = create<AppState>((set, get) => ({
         iconName,
         description
       };
-      await apex.collection('courses').create({ data: courseData });
+      await apex.collection('courses').create(courseData);
       const coursesRes = await apex.collection('courses').list();
-      set({ courses: coursesRes.items as Course[], isLoading: false });
+      const unfoldedCourses = (coursesRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Course[];
+      set({ courses: unfoldedCourses, isLoading: false });
     } catch (err: any) {
       console.error('Failed to create course', err);
       set({ isLoading: false, error: err.message || 'Failed to create course' });
@@ -678,9 +806,15 @@ export const useStore = create<AppState>((set, get) => ({
   updateCourse: async (courseId, updates) => {
     set({ isLoading: true, error: null });
     try {
-      await apex.collection('courses').update(courseId, { data: updates });
+      await apex.collection('courses').update(courseId, updates);
       const coursesRes = await apex.collection('courses').list();
-      set({ courses: coursesRes.items as Course[], isLoading: false });
+      const unfoldedCourses = (coursesRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Course[];
+      set({ courses: unfoldedCourses, isLoading: false });
     } catch (err: any) {
       console.error('Failed to update course', err);
       set({ isLoading: false, error: err.message || 'Failed to update course' });
@@ -692,7 +826,13 @@ export const useStore = create<AppState>((set, get) => ({
     try {
       await apex.collection('courses').delete(courseId);
       const coursesRes = await apex.collection('courses').list();
-      set({ courses: coursesRes.items as Course[], isLoading: false });
+      const unfoldedCourses = (coursesRes.items as any[]).map(item => ({
+        id: String(item.id),
+        ...item.data,
+        created: item.created,
+        updated: item.updated
+      })) as unknown as Course[];
+      set({ courses: unfoldedCourses, isLoading: false });
     } catch (err: any) {
       console.error('Failed to delete course', err);
       set({ isLoading: false, error: err.message || 'Failed to delete course' });
@@ -702,8 +842,7 @@ export const useStore = create<AppState>((set, get) => ({
   switchTenant: async (newTenantId: string) => {
     set({ isLoading: true, error: null });
     try {
-      // Re-initialize class instance with new tenant scope ID
-      apex = new ApexKit('https://api.apexkit.edu').tenant(newTenantId);
+      apex = new ApexKit(window.location.origin).tenant(newTenantId) as ApexKit;
       set({ apex, tenantId: newTenantId });
       await get().init();
     } catch (err: any) {
@@ -715,10 +854,9 @@ export const useStore = create<AppState>((set, get) => ({
   simulateMissingCollection: async (collectionName: string) => {
     set({ isLoading: true, error: null });
     try {
-      // Access the non-existent collection to trigger warning and fallback list
       await apex.collection(collectionName).list();
       set({
-        missingCollections: [...apex.missingCollectionsHandled],
+        // missingCollections: [...apex.missingCollectionsHandled],
         isLoading: false
       });
     } catch (err: any) {

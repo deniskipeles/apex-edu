@@ -79,7 +79,7 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
 
   useEffect(() => {
     fetchAssignments();
-  }, [fetchAssignments]);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -163,18 +163,18 @@ export default function Dashboard({ onOpenDeposit, onOpenNewAssignment }: Dashbo
     }
   }, [courses, currentUser]);
 
-  // Student specific filters
-  const studentAssignments = assignments.filter((a) => a.studentId === currentUser?.id);
+  // Student specific filters - safe-casted for string/number cross-compatibility
+  const studentAssignments = assignments.filter((a) => String(a.studentId) === String(currentUser?.id));
   const studentActive = studentAssignments.filter((a) => a.status === 'active' || a.status === 'completed');
   const studentOpen = studentAssignments.filter((a) => a.status === 'open' || a.status === 'bidded');
   const studentCompleted = studentAssignments.filter((a) => a.status === 'paid');
 
-  // Tutor specific filters
-  const tutorBids = bids.filter((b) => b.tutorId === currentUser?.id);
-  const tutorActive = assignments.filter((a) => a.tutorId === currentUser?.id && (a.status === 'active' || a.status === 'completed'));
-  const tutorOpenMarket = assignments.filter((a) => a.status === 'open' && !tutorBids.some(b => b.assignmentId === a.id));
-  const tutorProposals = assignments.filter((a) => tutorBids.some(b => b.assignmentId === a.id) && (a.status === 'open' || a.status === 'bidded'));
-  const tutorCompleted = assignments.filter((a) => a.tutorId === currentUser?.id && a.status === 'paid');
+  // Tutor specific filters - safe-casted for string/number cross-compatibility
+  const tutorBids = bids.filter((b) => String(b.tutorId) === String(currentUser?.id));
+  const tutorActive = assignments.filter((a) => String(a.tutorId) === String(currentUser?.id) && (a.status === 'active' || a.status === 'completed'));
+  const tutorOpenMarket = assignments.filter((a) => a.status === 'open' && !tutorBids.some(b => String(b.assignmentId) === String(a.id)));
+  const tutorProposals = assignments.filter((a) => tutorBids.some(b => String(b.assignmentId) === String(a.id)) && (a.status === 'open' || a.status === 'bidded'));
+  const tutorCompleted = assignments.filter((a) => String(a.tutorId) === String(currentUser?.id) && a.status === 'paid');
 
   // Direct conversations list based on multiple contract/bid relationships
   const recentConversations = useMemo(() => {
