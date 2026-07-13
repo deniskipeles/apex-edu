@@ -1,8 +1,8 @@
+// =========================== apex-assignment-help-portal/src/store/useStore.ts start here ===========================
 import { create } from 'zustand';
 import { ApexKit, ApexKitRealtimeWSClient } from '../lib/apexClient';
 import { UserProfile, Assignment, Bid, Message, Course, Review, PaymentTransaction } from '../types';
 
-// Instantiate the production-ready ApexKit client
 let apex: ApexKit = new ApexKit("https://kipeles-vs--5000.hf.space").tenant('apex-assignment-help') as ApexKit;
 
 interface AppState {
@@ -13,12 +13,10 @@ interface AppState {
   isLoading: boolean;
   error: string | null;
 
-  // Tenant / Collection state trackers
   tenantId: string;
   isTenantFallback: boolean;
   missingCollections: string[];
 
-  // Data collections
   courses: Course[];
   assignments: Assignment[];
   bids: Bid[];
@@ -27,11 +25,9 @@ interface AppState {
   reviews: Review[];
   payments: PaymentTransaction[];
 
-  // Navigation / active states
   activeChatRoomId: string | null;
   activeChatPartner: UserProfile | null;
 
-  // Actions
   init: () => Promise<void>;
   switchTenant: (tenantId: string) => Promise<void>;
   simulateMissingCollection: (collectionName: string) => Promise<void>;
@@ -41,33 +37,26 @@ interface AppState {
   updateProfile: (metadata: Partial<UserProfile>) => Promise<void>;
   depositFunds: (amount: number) => Promise<void>;
 
-  // Assignment Actions
   fetchAssignments: () => Promise<void>;
   createAssignment: (title: string, description: string, courseId: string, budget: number, deadline: string, files: File[]) => Promise<void>;
   cancelAssignment: (assignmentId: string) => Promise<void>;
 
-  // Tutor Bidding Actions
   submitBid: (assignmentId: string, amount: number, proposal: string) => Promise<void>;
   acceptBid: (assignmentId: string, bidId: string) => Promise<void>;
 
-  // Contract Workflow
   markAssignmentCompleted: (assignmentId: string, solutionUrls?: { name: string; url: string; size: number }[]) => Promise<void>;
   releasePayment: (assignmentId: string) => Promise<void>;
 
-  // Chat Actions
   startChat: (tutorId: string, assignmentId?: string) => Promise<void>;
   fetchMessages: (chatRoomId: string) => Promise<void>;
   sendMessage: (text: string, file?: File) => Promise<void>;
 
-  // Review Actions
   submitReview: (tutorId: string, rating: number, comment: string, assignmentTitle: string) => Promise<void>;
 
-  // Course CRUD Actions
   createCourse: (code: string, name: string, category: string, iconName: string, description: string) => Promise<void>;
   updateCourse: (courseId: string, updates: Partial<Omit<Course, 'id'>>) => Promise<void>;
   deleteCourse: (courseId: string) => Promise<void>;
 
-  // Theme Management
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
@@ -130,29 +119,55 @@ export const useStore = create<AppState>((set, get) => ({
       const token = apex.getToken();
       let ws: ApexKitRealtimeWSClient | null = null;
       if (token) {
+        // Safe clear old heartbeat timer if already registered
+        if ((window as any).__onlineHeartbeatInterval) {
+          clearInterval((window as any).__onlineHeartbeatInterval);
+          (window as any).__onlineHeartbeatInterval = null;
+        }
+
         ws = new ApexKitRealtimeWSClient(apex.baseUrl, token);
         ws.connect();
         
         ws.onEvent((msg: any) => {
-          if (msg.type === 'Signal' && msg.event === 'NewMessage') {
-            const receivedMsg = msg.payload as Message;
-            set((state) => {
-              const updatedMessages = [...state.messages];
-              if (!updatedMessages.some(m => m.id === receivedMsg.id)) {
-                updatedMessages.push(receivedMsg);
-              }
-              return { messages: updatedMessages };
-            });
+          // Correctly map and handle 'Custom' DbEvent sent by the ApexKit back-end
+          if (msg.type === 'Custom' && msg.payload?.event === 'NewMessage') {
+            const receivedMsg = msg.payload.data as Message;
+            
+            // Only append the message if it corresponds to the currently viewed room
+            const currentRoomId = get().activeChatRoomId;
+            if (currentRoomId && receivedMsg.chatRoomId === currentRoomId) {
+              set((state) => {
+                const updatedMessages = [...state.messages];
+                if (!updatedMessages.some(m => m.id === receivedMsg.id)) {
+                  updatedMessages.push(receivedMsg);
+                }
+                return { messages: updatedMessages };
+              });
+            }
           }
         });
+
+        // Seed online status WS Signal every 20 seconds
+        const heartbeatInterval = setInterval(() => {
+          const activeWs = get().wsClient;
+          const user = get().currentUser;
+          if (activeWs && activeWs.isConnected && user) {
+            activeWs.sendSignal('presence', 'UserOnline', {
+              userId: user.id,
+              name: user.name,
+              role: user.role,
+              timestamp: new Date().toISOString()
+            });
+          }
+        }, 20000);
+
+        (window as any).__onlineHeartbeatInterval = heartbeatInterval;
       }
 
       let profile: UserProfile | null = null;
       if (token) {
         try {
           const user = await apex.auth.getMe();
-          
-          // Query the users_profiles collection for the profile record owned by this system user
           const userProfileRes = await apex.collection('users_profiles').list({
             filter: JSON.stringify({ user_id: user.id })
           });
@@ -160,14 +175,13 @@ export const useStore = create<AppState>((set, get) => ({
           const profileRecord = userProfileRes.items[0];
 
           if (profileRecord) {
-            // Unfold the profile record schema and map its unique ID
             const profileData = {
-              id: String(profileRecord.id), // The unique users_profiles record ID
+              id: String(profileRecord.id),
               ...profileRecord.data
             };
 
             profile = {
-              id: profileData.id, // Overwrite profile.id with the relational users_profiles ID
+              id: profileData.id,
               email: user.email,
               role: user.role as 'student' | 'tutor',
               name: profileData.name || '',
@@ -181,7 +195,6 @@ export const useStore = create<AppState>((set, get) => ({
               enrolledCourseIds: profileData.enrolledCourseIds || []
             };
           } else {
-            // Fallback to system profile structure if users_profiles is not seeded yet
             profile = {
               id: user.id,
               email: user.email,
@@ -203,7 +216,6 @@ export const useStore = create<AppState>((set, get) => ({
         }
       }
 
-      // Fetch all collections concurrently with fallback protection to prevent cascading failures
       const [
         coursesRes,
         tutorsRes,
@@ -287,8 +299,6 @@ export const useStore = create<AppState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await apex.auth.login(email, password);
-
-      // Explicitly trigger token synchronization with localStorage
       apex.setToken(res.token, res.user);
       
       const userProfile: UserProfile = {
@@ -337,8 +347,6 @@ export const useStore = create<AppState>((set, get) => ({
       };
 
       const res = await apex.auth.register(email, password, metadata, role);
-      
-      // Explicitly trigger token synchronization with localStorage
       apex.setToken(res.token, res.user);
       
       set({ isLoading: false });
@@ -353,6 +361,10 @@ export const useStore = create<AppState>((set, get) => ({
     apex.auth.logout();
     if (get().wsClient) {
       get().wsClient?.disconnect();
+    }
+    if ((window as any).__onlineHeartbeatInterval) {
+      clearInterval((window as any).__onlineHeartbeatInterval);
+      (window as any).__onlineHeartbeatInterval = null;
     }
     set({
       currentUser: null,
@@ -443,18 +455,17 @@ export const useStore = create<AppState>((set, get) => ({
         courseId,
         courseCode,
         budget: Number(budget),
-        deadline: new Date(deadline).toISOString(), // Convert to fully qualified UTC ISO 8601 string
+        deadline: new Date(deadline).toISOString(),
         studentId: user.id,
         studentName: user.name,
         status: 'open',
-        fileUrls: fileUrls || [], // Guarantee a valid JSON array structure
-        solutionUrls: [],        // Explicitly initialize with an empty JSON array
+        fileUrls: fileUrls || [],
+        solutionUrls: [],
         bidsCount: 0,
         createdAt: new Date().toISOString()
       };
 
       await apex.collection('assignments').create(newAssignment);
-      
       await get().fetchAssignments();
       set({ isLoading: false });
     } catch (err: any) {
@@ -667,6 +678,15 @@ export const useStore = create<AppState>((set, get) => ({
       activeChatPartner: partnerProfile || null
     });
 
+    // Automatically subscribe the client stream to the chatRoomId channel on chat activation
+    const ws = get().wsClient;
+    if (ws && ws.isConnected) {
+      ws.subscribe({
+        channel: chatRoomId,
+        customEvent: 'NewMessage'
+      });
+    }
+
     await get().fetchMessages(chatRoomId);
   },
 
@@ -712,21 +732,26 @@ export const useStore = create<AppState>((set, get) => ({
         file: filePayload
       };
 
+      // Always persist message records in the central ledger first
+      const now = new Date().toISOString();
+      const savedMsg = await apex.collection('messages').create({
+        ...msgData,
+        createdAt: now
+      });
+
+      const unfoldedMsg = {
+        id: String(savedMsg.id),
+        ...savedMsg.data,
+        created: savedMsg.created,
+        updated: savedMsg.updated
+      } as unknown as Message;
+
+      // Render local state instantly to avoid latency
+      set((state) => ({ messages: [...state.messages, unfoldedMsg] }));
+
+      // Broadcast the persisted record via WebSockets
       if (get().wsClient && get().wsClient?.isConnected) {
-        get().wsClient?.sendSignal(room, 'NewMessage', msgData);
-      } else {
-        const now = new Date().toISOString();
-        const savedMsg = await apex.collection('messages').create({
-          ...msgData,
-          createdAt: now
-        });
-        const unfoldedMsg = {
-          id: String(savedMsg.id),
-          ...savedMsg.data,
-          created: savedMsg.created,
-          updated: savedMsg.updated
-        } as unknown as Message;
-        set((state) => ({ messages: [...state.messages, unfoldedMsg] }));
+        get().wsClient?.sendSignal(room, 'NewMessage', unfoldedMsg);
       }
 
     } catch (err) {
@@ -856,7 +881,6 @@ export const useStore = create<AppState>((set, get) => ({
     try {
       await apex.collection(collectionName).list();
       set({
-        // missingCollections: [...apex.missingCollectionsHandled],
         isLoading: false
       });
     } catch (err: any) {
@@ -865,3 +889,4 @@ export const useStore = create<AppState>((set, get) => ({
     }
   }
 }));
+// =========================== apex-assignment-help-portal/src/store/useStore.ts ends here ===========================

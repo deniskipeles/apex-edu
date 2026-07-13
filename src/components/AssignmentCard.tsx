@@ -392,7 +392,7 @@ export default function AssignmentCard({
           )}
 
           {/* Chat room buttons for Contract Participants */}
-          {assignment.status === 'active' && (currentUser?.id === assignment.studentId || currentUser?.id === assignment.tutorId) && (
+          {assignment.status === 'active' && (String(currentUser?.id) === String(assignment.studentId) || String(currentUser?.id) === String(assignment.tutorId)) && (
             <button
               onClick={() => {
                 startChat(isStudentOwner ? assignment.tutorId! : assignment.studentId!);
@@ -406,7 +406,7 @@ export default function AssignmentCard({
           )}
 
           {/* Mark Completed Button for Tutor in Active Contract */}
-          {assignment.status === 'active' && currentUser?.id === assignment.tutorId && (
+          {assignment.status === 'active' && String(currentUser?.id) === String(assignment.tutorId) && (
             <button
               onClick={() => setDeliveryModalOpen(true)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-4 py-2.5 rounded-xl shadow-sm font-bold cursor-pointer transition-colors"
