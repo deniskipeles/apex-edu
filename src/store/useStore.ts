@@ -13,8 +13,6 @@ interface AppState {
   error: string | null;
 
   tenantId: string;
-  isTenantFallback: boolean;
-  missingCollections: string[];
 
   courses: Course[];
   assignments: Assignment[];
@@ -29,8 +27,6 @@ interface AppState {
   activeChatPartner: UserProfile | null;
 
   init: () => Promise<void>;
-  switchTenant: (tenantId: string) => Promise<void>;
-  simulateMissingCollection: (collectionName: string) => Promise<void>;
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string, name: string, role: 'student' | 'tutor', extra?: any) => Promise<boolean>;
   logout: () => void;
@@ -70,8 +66,6 @@ export const useStore = create<AppState>((set, get) => ({
   error: null,
 
   tenantId: 'apex-assignment-help',
-  isTenantFallback: false,
-  missingCollections: [],
 
   courses: [],
   assignments: [],
@@ -113,8 +107,6 @@ export const useStore = create<AppState>((set, get) => ({
 
       set({
         tenantId: status.tenantId,
-        isTenantFallback: status.fallbackActive,
-        missingCollections: [...(apex.missingCollectionsHandled || [])]
       });
 
       const token = apex.getToken();
@@ -882,31 +874,6 @@ export const useStore = create<AppState>((set, get) => ({
     } catch (err: any) {
       console.error('Failed to delete course', err);
       set({ isLoading: false, error: err.message || 'Failed to delete course' });
-    }
-  },
-
-  switchTenant: async (newTenantId: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      apex = new ApexKit(window.location.origin).tenant(newTenantId) as ApexKit;
-      set({ apex, tenantId: newTenantId });
-      await get().init();
-    } catch (err: any) {
-      console.error('[Store switchTenant Error]:', err);
-      set({ isLoading: false, error: err.message || 'Failed to switch tenant' });
-    }
-  },
-
-  simulateMissingCollection: async (collectionName: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      await apex.collection(collectionName).list();
-      set({
-        isLoading: false
-      });
-    } catch (err: any) {
-      console.error('[Store simulateMissingCollection Error]:', err);
-      set({ isLoading: false, error: err.message || 'Failed to simulate missing collection' });
     }
   }
 }));
