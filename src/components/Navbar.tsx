@@ -217,7 +217,9 @@ export default function Navbar({ onOpenDeposit, onOpenNewAssignment }: NavbarPro
           {isAuthenticated ? (
             <>
               {/* User Bio Card */}
-              <Link to="/profile">
+              <Link to="/profile" onClick={() => {
+                setMobileMenuOpen(false);
+              }}>
                 <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl">
                   <img
                     src={currentUser?.avatar}
